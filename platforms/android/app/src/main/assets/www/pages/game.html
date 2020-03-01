@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+    <title>Spiel</title>
+</head>
+
+<body onload="style()">
+    <div class="fwBox">Willkommen im Spiel. Bearbeite Namen durch langen Klick auf das Feld, markiere Sieger durch Einfachklick, markiere Geber durch Doppelklick.</div>
+    <!-- TODO Listeners-->
+    <div class="hwBox" id="player1" onclick="mark(this)">1</div>
+    <div class="hwBox" id="player2" onclick="mark(this)">2</div>
+    <div class="hwBox" id="player3" onclick="mark(this)">3</div>
+    <div class="hwBox" id="player4" onclick="mark(this)">4</div>
+    <div class="hwBox" id="player5" onclick="mark(this)">5</div>
+    <div class="hwBox" id="player6" onclick="mark(this)">6</div>
+    <button onclick="showResult()">Tabelle</button>
+    <button onclick="nextRound()">N&auml;chste Runde</button>
+    <script type="text/javascript" src="../cordova.js"></script>
+    <script type="text/javascript" src="../js/index.js"></script>
+</body o>
+
+</html>

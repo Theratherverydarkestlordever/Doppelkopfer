@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+    <!--<script type="text/javascript" src="../cordova.js"></script>-->
+    <script type="text/javascript" src="../js/index.js"></script>
+    <title>Spiel</title>
+</head>
+
+<body onload="style()">
+
+    <div class="fwBox" id="gameText">Willkommen im Spiel. Bearbeite Namen durch langen Klick auf das Feld (geht noch nicht), markiere Sieger durch Einfachklick, markiere Geber durch Doppelklick.</div>
+    <div class="hwBox" id="1" onclick="mark(this)">1</div>
+    <div class="hwBox" id="2" onclick="mark(this)">2</div>
+    <div class="hwBox" id="3" onclick="mark(this)">3</div>
+    <div class="hwBox" id="4" onclick="mark(this)">4</div>
+    <div class="hwBox" id="5" onclick="mark(this)">5</div>
+    <div class="hwBox" id="6" onclick="mark(this)">6</div>
+    <button onclick="showResult()">Tabelle</button>
+    <button onclick="scoring()">Punktevergabe</button>
+    <button onclick="nextRound()">N&auml;chste Runde</button>
+
+
+    <!-- Punkteauswahlfenster -->
+    <div id="scoreSelect" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" id="abort">Abbrechen</span> <br><br>
+            <span class="close" id="ok" onclick="//close(true)">Punkte setzen</span>
+            <p>Bitte wähle die Punkte für die Gewinner:</p>
+            <p>Beim Schließen dieses Fensters werden nach der aktuellen Auswahl <b><span id="pointTxt">0</span></b> Punkte an folgende Spieler vergeben: <b><span id="winTxt"></span></b></p>
+            <table style="width:100%">
+                <tr>
+                    <td onclick="setScore(0)">0</td>
+                    <td onclick="setScore(1)">1</td>
+                    <td onclick="setScore(2)">2</td>
+                    <td onclick="setScore(3)">3</td>
+                    <td onclick="setScore(4)">4</td>
+                </tr>
+                <tr>
+                    <td onclick="setScore(5)">5</td>
+                    <td onclick="setScore(6)">6</td>
+                    <td onclick="setScore(7)">7</td>
+                    <td onclick="setScore(8)">8</td>
+                    <td onclick="setScore(9)">9</td>
+                </tr>
+                <tr>
+                    <td onclick="setScore(10)">10</td>
+                    <td onclick="setScore(11)">11</td>
+                    <td onclick="setScore(12)">12</td>
+                    <td onclick="setScore(13)">13</td>
+                    <td onclick="setScore(14)">14</td>
+                </tr>
+                <tr>
+                    <td onclick="setScore(15)">15</td>
+                    <td onclick="setScore(16)">16</td>
+                    <td onclick="setScore(17)">17</td>
+                    <td onclick="setScore(18)">18</td>
+                    <td onclick="setScore(19)">19</td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
