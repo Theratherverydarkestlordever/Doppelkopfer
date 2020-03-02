@@ -2,18 +2,20 @@ var markedWinners = 0; //Anzahl markierter Gewinner
 var markedDist = false; //Geber gesetzt ?
 var marking = [0, 0, 0, 0, 0, 0] //Speicher für Markierungen
 var allowedDist = 0; //Anzahl erlaubter Geber
+var namenswahl = false;
 
 function startNewGame(number) {
     if (number < 4 || number > 6) throw new IllegalArgumentException();
     localStorage.setItem("playerNo", number);
     localStorage.setItem("allowedWinners", number / 2); //TODO gilt das?
     allowedDist = (number == 5) ? 1 : 0; //TODO gilt das?
-    localStorage.setItem("punkte", [0, 0, 0, 0, 0, 0]);
-    names = ["a", "b", "c", "d", "e", "f"]; //TODO 
-    localStorage.setItem("namen", names.toString()); //TODO vernünftig setzen
+    var punkte = [0, 0, 0, 0, 0, 0];
+    localStorage.setItem("punkte", punkte.toString());
     //parent.document.getElementById("testNo").innerHTML = localStorage.getItem("playerNo");
 
 }
+
+//alert(localStorage.getItem("runde"));
 
 //prompt("Test");
 
@@ -32,36 +34,57 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
         feld5.style.display = "none";
         feld6.style.display = "none";
     }
+
+    if (localStorage.getItem("runde") == null) {
+        namenswahl = true;
+    }
+    var names = ["a", "b", "c", "d", "e", "f"]; //TODO 
+    localStorage.setItem("namen", names.toString()); //TODO vernünftig setzen
+}
+
+function finishNames() {
+    namenswahl = false;
+    document.getElementById("round").innerHTML = "Runde 1"; //TODO Rundenzahl
+    //TODO Buttons vernünftig ausblenden
+    nextRound();
 }
 
 function mark(button) { //sorgt fuer korrekte Markierung der Spieler
+    //alert(namenswahl);
     var buttonID = Number(button.id); // TODO ID Abfragen
-    var allowedWinners = localStorage.getItem("allowedWinners");
+    if (namenswahl) {
+        var entered = prompt("Bitte wähle einen Namen: ", "Spieler" + buttonID);
+        namen = localStorage.getItem("namen").split(",");
+        namen[buttonID] = entered;
+        button.innerHTML = entered;
+        localStorage.setItem("namen", namen.toString())
+    } else {
+        var allowedWinners = localStorage.getItem("allowedWinners");
+        //allowedWinners = 2; //TODO NUR FUER DEBUG
 
-    allowedWinners = 2; //TODO NUR FUER DEBUG
-
-    //alert(buttonID - 1);
-    if (marking[buttonID - 1] == 0) { //wenn Status = 0, mache zu Gewinner
-        //alert("hier");
-        if (markedWinners + 1 <= allowedWinners) {
-            marking[buttonID - 1] = 1;
-            markedWinners++;
+        //alert(buttonID - 1);
+        if (marking[buttonID - 1] == 0) { //wenn Status = 0, mache zu Gewinner
+            //alert("hier");
+            if (markedWinners + 1 <= allowedWinners) {
+                marking[buttonID - 1] = 1;
+                markedWinners++;
+            }
+        } else if (marking[buttonID - 1] == 1) { //wenn Gewinner, mache zu Geber
+            //alert("hier2");
+            if (!markedDist) {
+                marking[buttonID - 1] = 2;
+                markedWinners--;
+                markedDist = true;
+            }
+        } else if (marking[buttonID - 1] == 2) { //wenn Geber, setze Status = 0
+            //alert("hier3");
+            marking[buttonID - 1] = 0;
+            markedDist = false;
         }
-    } else if (marking[buttonID - 1] == 1) { //wenn Gewinner, mache zu Geber
-        //alert("hier2");
-        if (!markedDist) {
-            marking[buttonID - 1] = 2;
-            markedWinners--;
-            markedDist = true;
-        }
-    } else if (marking[buttonID - 1] == 2) { //wenn Geber, setze Status = 0
-        //alert("hier3");
-        marking[buttonID - 1] = 0;
-        markedDist = false;
+        //alert(markedWinners + " " + markedDist);
+        //alert(marking);
+        updateButtonStyle(button.id, marking[buttonID - 1]); //TODO
     }
-    //alert(markedWinners + " " + markedDist);
-    //alert(marking);
-    updateButtonStyle(button.id, marking[buttonID - 1]); //TODO
 
 }
 
@@ -110,6 +133,13 @@ abBtn.onclick(close(false));
 var score = 0;
 
 function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Namen veranwtortlich
+    var allowedWinners = localStorage.getItem("allowedWinners");
+    var allowedDist = localStorage.getItem("allowdDist");
+    //alert(allowedDist + " - " + allowedWinners + " - " + (markedDist) ? 1 : 0);
+    /*if (markedWinners > allowedWinners || (allowedDist != (markedDist) ? 1 : 0)) {
+        alert("Bitte Auswahl überprüfen");
+        return;
+    }*/
     var modal = document.getElementById("scoreSelect");
     var gewNamen = "";
     var namen = localStorage.getItem("namen").split(",");
@@ -129,15 +159,29 @@ function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angez
 }
 
 
-function close(set) { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false //TODO FERTIG //warum wird nicht ausgeführt?
+function closer(set) { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false //TODO FERTIG //warum wird nicht ausgeführt?
     var modal = document.getElementById("scoreSelect");
+    var punkte = localStorage.getItem("punkte").split(",");
+    alert(punkte);
     if (set) {
-        //Setze Punkte
-        alert("Gesetzt!!!");
+        for (i = 0; i < 6; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
+            if (marking[i] == 1) {
+                punkte[i] = parseInt(punkte[i]) + score;
+            }
+        }
+        //alert("Gesetzt!!!");
+        localStorage.setItem("punkte", punkte.toString())
+        document.getElementById("nextBtn").disabled = "false";
     } else {
-        alert("Abgebrochen!!!");
+        //alert("Abgebrochen!!!");
     }
     modal.style.display = "none";
+    alert(punkte);
+}
+
+function nextRound() {
+    resetMarking();
+    document.getElementById("nextBtn").disabled = "true";
 }
 
 

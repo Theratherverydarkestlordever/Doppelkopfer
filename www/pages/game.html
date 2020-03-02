@@ -12,8 +12,9 @@
 </head>
 
 <body onload="style()">
-
-    <div class="fwBox" id="gameText">Willkommen im Spiel. Bearbeite Namen durch langen Klick auf das Feld (geht noch nicht), markiere Sieger durch Einfachklick, markiere Geber durch Doppelklick.</div>
+    <h1 class="fwBox" id="round">Namensauswahl</h1>
+    <div class="fwBox" id="nameText">Willkommen im Spiel. Tippe jedes Feld an, um einen Namen auszuwählen.</div>
+    <div class="fwBox" id="gameText">Markiere maximal <b><span id="allowedWinNo">x</span></b> Sieger durch Einfachklick, markiere <b><span id="allowedDistNo">x</span></b> Geber durch Doppelklick.</div>
     <div class="hwBox" id="1" onclick="mark(this)">1</div>
     <div class="hwBox" id="2" onclick="mark(this)">2</div>
     <div class="hwBox" id="3" onclick="mark(this)">3</div>
@@ -22,7 +23,8 @@
     <div class="hwBox" id="6" onclick="mark(this)">6</div>
     <button onclick="showResult()">Tabelle</button>
     <button onclick="scoring()">Punktevergabe</button>
-    <button onclick="nextRound()">N&auml;chste Runde</button>
+    <button onclick="nextRound()" id="nextBtn" disabled="true">N&auml;chste Runde</button>
+    <button onclick="finishNames()">Namenswahl beenden</button>
 
 
     <!-- Punkteauswahlfenster -->
@@ -30,8 +32,8 @@
 
         <!-- Modal content -->
         <div class="modal-content">
-            <span class="close" id="abort">Abbrechen</span> <br><br>
-            <span class="close" id="ok" onclick="//close(true)">Punkte setzen</span>
+            <span class="close" id="abort" onclick="closer(false)">Abbrechen</span> <br><br>
+            <span class="close" id="ok" onclick="closer(true)">Punkte setzen</span>
             <p>Bitte wähle die Punkte für die Gewinner:</p>
             <p>Beim Schließen dieses Fensters werden nach der aktuellen Auswahl <b><span id="pointTxt">0</span></b> Punkte an folgende Spieler vergeben: <b><span id="winTxt"></span></b></p>
             <table style="width:100%">
@@ -67,6 +69,7 @@
         </div>
 
     </div>
+
 
 </body>
 
