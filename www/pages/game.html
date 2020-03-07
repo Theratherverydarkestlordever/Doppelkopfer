@@ -15,16 +15,16 @@
     <h1 class="fwBox" id="round">Namensauswahl</h1>
     <div class="fwBox" id="nameText">Willkommen im Spiel. Tippe jedes Feld an, um einen Namen auszuwählen.</div>
     <div class="fwBox" id="gameText">Markiere maximal <b><span id="allowedWinNo">x</span></b> Sieger durch Einfachklick, markiere <b><span id="allowedDistNo">x</span></b> Geber durch Doppelklick.</div>
-    <div class="hwBox" id="1" onclick="mark(this)">1</div>
-    <div class="hwBox" id="2" onclick="mark(this)">2</div>
-    <div class="hwBox" id="3" onclick="mark(this)">3</div>
-    <div class="hwBox" id="4" onclick="mark(this)">4</div>
-    <div class="hwBox" id="5" onclick="mark(this)">5</div>
-    <div class="hwBox" id="6" onclick="mark(this)">6</div>
-    <button onclick="showResult()">Tabelle</button>
-    <button onclick="scoring()">Punktevergabe</button>
-    <button onclick="nextRound()" id="nextBtn" disabled="true">N&auml;chste Runde</button>
-    <button onclick="finishNames()">Namenswahl beenden</button>
+    <div class="hwBox" id="0" onclick="mark(this)" oncontextmenu="alert('hey')">Spieler 1</div>
+    <div class="hwBox" id="1" onclick="mark(this)">Spieler 2</div>
+    <div class="hwBox" id="2" onclick="mark(this)">Spieler 3</div>
+    <div class="hwBox" id="3" onclick="mark(this)">Spieler 4</div>
+    <div class="hwBox" id="4" onclick="mark(this)">Spieler 5</div>
+    <div class="hwBox" id="5" onclick="mark(this)">Spieler 6</div>
+    <button onclick="showResult()" id="tbl">Tabelle</button>
+    <button onclick="scoring()" id="scr">Punktevergabe</button>
+    <!--<button onclick="nextRound()" id="nextBtn">N&auml;chste Runde</button>-->
+    <button onclick="finishNames()" id="nms">Namenswahl beenden</button>
 
 
     <!-- Punkteauswahlfenster -->

@@ -22,15 +22,15 @@ function startNewGame(number) {
 function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeldern erscheint und diese ansprechend formatiert sind
     players = localStorage.getItem("playerNo");
     if (players == 5) { //wenn 5 Spieler, blende Feld 6 aus und setze die Breite von Feld 5 von halbe auf volle Breite
-        feld5 = document.getElementById("5");
-        feld6 = document.getElementById("6");
+        feld5 = document.getElementById("4");
+        feld6 = document.getElementById("5");
         feld6.style.display = "none";
         feld5.classList.remove("hwBox");
         feld5.classList.add("fwBox");
 
     } else if (players == 4) { //wenn 4 Spieler, blende Felder 5 und 6 aus
-        feld5 = document.getElementById("5");
-        feld6 = document.getElementById("6");
+        feld5 = document.getElementById("4");
+        feld6 = document.getElementById("5");
         feld5.style.display = "none";
         feld6.style.display = "none";
     }
@@ -38,8 +38,11 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
     if (localStorage.getItem("runde") == null) {
         namenswahl = true;
     }
-    var names = ["a", "b", "c", "d", "e", "f"]; //TODO 
+    var names = ["Spieler 1", "Spieler 2", "Spieler 3", "Spieler 4", "Spieler 5", "Spieler 6"]; //TODO 
     localStorage.setItem("namen", names.toString()); //TODO vernünftig setzen
+    document.getElementById("scr").style.display = "none";
+    document.getElementById("tbl").style.display = "none";
+
 }
 
 function finishNames() {
@@ -53,63 +56,66 @@ function mark(button) { //sorgt fuer korrekte Markierung der Spieler
     //alert(namenswahl);
     var buttonID = Number(button.id); // TODO ID Abfragen
     if (namenswahl) {
-        var entered = prompt("Bitte wähle einen Namen: ", "Spieler" + buttonID);
-        namen = localStorage.getItem("namen").split(",");
-        namen[buttonID] = entered;
-        button.innerHTML = entered;
-        localStorage.setItem("namen", namen.toString())
+        var entered = prompt("Bitte wähle einen Namen: ", "Spieler " + (buttonID + 1));
+        if (entered != null) {
+            namen = localStorage.getItem("namen").split(",");
+            namen[buttonID] = entered;
+            button.innerHTML = entered;
+            localStorage.setItem("namen", namen.toString())
+        }
     } else {
         var allowedWinners = localStorage.getItem("allowedWinners");
         //allowedWinners = 2; //TODO NUR FUER DEBUG
 
         //alert(buttonID - 1);
-        if (marking[buttonID - 1] == 0) { //wenn Status = 0, mache zu Gewinner
+        if (marking[buttonID] == 0) { //wenn Status = 0, mache zu Gewinner
             //alert("hier");
             if (markedWinners + 1 <= allowedWinners) {
-                marking[buttonID - 1] = 1;
+                marking[buttonID] = 1;
                 markedWinners++;
             }
-        } else if (marking[buttonID - 1] == 1) { //wenn Gewinner, mache zu Geber
+        } else if (marking[buttonID] == 1) { //wenn Gewinner, mache zu Geber
             //alert("hier2");
             if (!markedDist) {
-                marking[buttonID - 1] = 2;
+                marking[buttonID] = 2;
                 markedWinners--;
                 markedDist = true;
             }
-        } else if (marking[buttonID - 1] == 2) { //wenn Geber, setze Status = 0
+        } else if (marking[buttonID] == 2) { //wenn Geber, setze Status = 0
             //alert("hier3");
-            marking[buttonID - 1] = 0;
+            marking[buttonID] = 0;
             markedDist = false;
         }
         //alert(markedWinners + " " + markedDist);
         //alert(marking);
-        updateButtonStyle(button.id, marking[buttonID - 1]); //TODO
+        updateButtonStyle(button.id, marking[buttonID]); //TODO
     }
 
 }
 
 function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der Spielerfelder
     var button = document.getElementById(buttonID);
+    var name = namen = localStorage.getItem("namen").split(",")[buttonID];
     var color;
     var text = button.innerHTML;
     switch (state) {
         case 0:
             color = "blue";
-            text = "normal"; //TODO NAMEN VERNUENFTIG
+            text = "";
             break;
         case 1:
             color = "yellow";
-            text = "gewinner"; //TODO
+            text = "(Sieger)";
             break;
         case 2:
             color = "green";
-            text = "geber";
+            text = "(Geber)";
             break;
         default:
             throw new IllegalArgumentException();
     }
     button.style.backgroundcolor = color;
-    button.innerHTML = text;
+    button.innerHTML = namen + " \n " + text;
 }
 
 //LISTE:
@@ -171,17 +177,27 @@ function closer(set) { //Schließt die Punkteauswahl und übernimmt die Punkte b
         }
         //alert("Gesetzt!!!");
         localStorage.setItem("punkte", punkte.toString())
-        document.getElementById("nextBtn").disabled = "false";
+            //document.getElementById("nextBtn").disabled = "false";
     } else {
         //alert("Abgebrochen!!!");
     }
     modal.style.display = "none";
     alert(punkte);
+    nextRound();
 }
+
+styled = false;
 
 function nextRound() {
     resetMarking();
-    document.getElementById("nextBtn").disabled = "true";
+    if (!namenswahl && !styled) {
+        document.getElementById("scr").style.display = "inline";
+        document.getElementById("tbl").style.display = "inline";
+        document.getElementById("nms").style.display = "none";
+        styled = true;
+    }
+    //document.getElementById("nextBtn").disabled = "true";
+    //TODO Rundenzahl updaten
 }
 
 
