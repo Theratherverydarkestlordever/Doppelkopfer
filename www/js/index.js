@@ -1,23 +1,21 @@
 var markedWinners = 0; //Anzahl markierter Gewinner
 var markedDist = false; //Geber gesetzt ?
 var marking = [0, 0, 0, 0, 0, 0] //Speicher für Markierungen
-var allowedDist = 0; //Anzahl erlaubter Geber
 var namenswahl = false;
 
 function startNewGame(number) {
+    localStorage.clear();
     if (number < 4 || number > 6) throw new IllegalArgumentException();
     localStorage.setItem("playerNo", number);
-    localStorage.setItem("allowedWinners", number / 2); //TODO gilt das?
-    allowedDist = (number == 5) ? 1 : 0; //TODO gilt das?
+    localStorage.setItem("allowedWinners", number - 1); //oder konstant drei?
+    var allowedDist = (number == 5) ? 1 : 0;
+    localStorage.setItem("allowedDist", allowedDist);
     var punkte = [0, 0, 0, 0, 0, 0];
     localStorage.setItem("punkte", punkte.toString());
     //parent.document.getElementById("testNo").innerHTML = localStorage.getItem("playerNo");
 
 }
 
-//alert(localStorage.getItem("runde"));
-
-//prompt("Test");
 
 function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeldern erscheint und diese ansprechend formatiert sind
     players = localStorage.getItem("playerNo");
@@ -27,12 +25,16 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
         feld6.style.display = "none";
         feld5.classList.remove("hwBox");
         feld5.classList.add("fwBox");
+        //document.getElementById("tbl5").style.display = "none";
 
     } else if (players == 4) { //wenn 4 Spieler, blende Felder 5 und 6 aus
         feld5 = document.getElementById("4");
         feld6 = document.getElementById("5");
         feld5.style.display = "none";
         feld6.style.display = "none";
+        //document.getElementById("tbl4").style.display = "none";
+        //document.getElementById("tbl5").style.display = "none";
+
     }
 
     if (localStorage.getItem("runde") == null) {
@@ -42,6 +44,7 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
     localStorage.setItem("namen", names.toString()); //TODO vernünftig setzen
     document.getElementById("scr").style.display = "none";
     document.getElementById("tbl").style.display = "none";
+    document.getElementById("scr").disabled = true;
 
 }
 
@@ -49,11 +52,11 @@ function finishNames() {
     namenswahl = false;
     document.getElementById("round").innerHTML = "Runde 1"; //TODO Rundenzahl
     //TODO Buttons vernünftig ausblenden
+    //document.getElementById("scr").style.disabled = true;
     nextRound();
 }
 
 function mark(button) { //sorgt fuer korrekte Markierung der Spieler
-    //alert(namenswahl);
     var buttonID = Number(button.id); // TODO ID Abfragen
     if (namenswahl) {
         var entered = prompt("Bitte wähle einen Namen: ", "Spieler " + (buttonID + 1));
@@ -65,37 +68,44 @@ function mark(button) { //sorgt fuer korrekte Markierung der Spieler
         }
     } else {
         var allowedWinners = localStorage.getItem("allowedWinners");
-        //allowedWinners = 2; //TODO NUR FUER DEBUG
+        var allowedDist = localStorage.getItem("allowedDist");
 
-        //alert(buttonID - 1);
-        if (marking[buttonID] == 0) { //wenn Status = 0, mache zu Gewinner
-            //alert("hier");
+        if (marking[buttonID] == 0) { //wenn normal, mache zu Gewinner, wenn max. Anzahl erreicht, mache zu Geber
             if (markedWinners + 1 <= allowedWinners) {
                 marking[buttonID] = 1;
                 markedWinners++;
+            } else if (markedWinners == allowedWinners && !markedDist && allowedDist == 1) {
+                marking[buttonID] = 2;
+                markedDist = true;
             }
-        } else if (marking[buttonID] == 1) { //wenn Gewinner, mache zu Geber
-            //alert("hier2");
-            if (!markedDist) {
+        } else if (marking[buttonID] == 1) { //wenn Gewinner, mache zu Geber oder zu normal
+            if (!markedDist && allowedDist == 1) {
                 marking[buttonID] = 2;
                 markedWinners--;
                 markedDist = true;
+            } else {
+                marking[buttonID] = 0;
+                markedWinners--;
             }
-        } else if (marking[buttonID] == 2) { //wenn Geber, setze Status = 0
-            //alert("hier3");
+        } else if (marking[buttonID] == 2) { //wenn Geber, mache zu normal
             marking[buttonID] = 0;
             markedDist = false;
         }
-        //alert(markedWinners + " " + markedDist);
-        //alert(marking);
-        updateButtonStyle(button.id, marking[buttonID]); //TODO
+        if (markedWinners > 0) { //wenn kein Gewinner ausgewählt, blende Punktevergabe aus
+            document.getElementById("scr").disabled = false;
+        } else {
+            document.getElementById("scr").disabled = true;
+        }
+        updateButtonStyle(button.id, marking[buttonID]);
     }
+
+
 
 }
 
 function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der Spielerfelder
     var button = document.getElementById(buttonID);
-    var name = namen = localStorage.getItem("namen").split(",")[buttonID];
+    var namen = localStorage.getItem("namen").split(",")[buttonID];
     var color;
     var text = button.innerHTML;
     switch (state) {
@@ -126,6 +136,7 @@ function resetMarking() { //Setzt Markierungen zurück
     marking = [0, 0, 0, 0, 0, 0];
     markedWinners = 0;
     for (i = 0; i < 6; i++) updateButtonStyle(i, 0);
+
 }
 
 /*
@@ -141,11 +152,6 @@ var score = 0;
 function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Namen veranwtortlich
     var allowedWinners = localStorage.getItem("allowedWinners");
     var allowedDist = localStorage.getItem("allowdDist");
-    //alert(allowedDist + " - " + allowedWinners + " - " + (markedDist) ? 1 : 0);
-    /*if (markedWinners > allowedWinners || (allowedDist != (markedDist) ? 1 : 0)) {
-        alert("Bitte Auswahl überprüfen");
-        return;
-    }*/
     var modal = document.getElementById("scoreSelect");
     var gewNamen = "";
     var namen = localStorage.getItem("namen").split(",");
@@ -168,21 +174,16 @@ function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angez
 function closer(set) { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false //TODO FERTIG //warum wird nicht ausgeführt?
     var modal = document.getElementById("scoreSelect");
     var punkte = localStorage.getItem("punkte").split(",");
-    alert(punkte);
     if (set) {
         for (i = 0; i < 6; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
             if (marking[i] == 1) {
                 punkte[i] = parseInt(punkte[i]) + score;
             }
         }
-        //alert("Gesetzt!!!");
         localStorage.setItem("punkte", punkte.toString())
-            //document.getElementById("nextBtn").disabled = "false";
-    } else {
-        //alert("Abgebrochen!!!");
-    }
+    } else {}
     modal.style.display = "none";
-    alert(punkte);
+    score = 0;
     nextRound();
 }
 
@@ -196,8 +197,35 @@ function nextRound() {
         document.getElementById("nms").style.display = "none";
         styled = true;
     }
-    //document.getElementById("nextBtn").disabled = "true";
-    //TODO Rundenzahl updaten
+    //document.getElementById("nextBtn").disabled = true;
+    var round = localStorage.getItem("round");
+    document.getElementById("round").innerHTML = "Runde " + ++round;
+    localStorage.setItem("round", round);
+    document.getElementById("scr").disabled = true;
+}
+
+function showResult() {
+    var namen = localStorage.getItem("namen").split(",");
+    var punkte = localStorage.getItem("punkte").split(",");
+    var number = Number(localStorage.getItem("number"));
+
+    document.getElementById("name0").innerHTML = namen[0];
+    document.getElementById("pnt0").innerHTML = punkte[0];
+    document.getElementById("name1").innerHTML = namen[1];
+    document.getElementById("pnt1").innerHTML = punkte[1];
+    document.getElementById("name2").innerHTML = namen[2];
+    document.getElementById("pnt2").innerHTML = punkte[2];
+    document.getElementById("name3").innerHTML = namen[3];
+    document.getElementById("pnt3").innerHTML = punkte[3];
+    document.getElementById("name4").innerHTML = namen[4];
+    document.getElementById("pnt4").innerHTML = punkte[4];
+    document.getElementById("name5").innerHTML = namen[5];
+    document.getElementById("pnt5").innerHTML = punkte[5];
+    document.getElementById("table").style.display = "block";
+}
+
+function closeTable() {
+    document.getElementById("table").style.display = "none";
 }
 
 
