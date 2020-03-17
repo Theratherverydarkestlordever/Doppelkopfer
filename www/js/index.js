@@ -23,17 +23,17 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
         feld5 = document.getElementById("4");
         feld6 = document.getElementById("5");
         feld6.style.display = "none";
-        feld5.classList.remove("hwBox");
-        feld5.classList.add("fwBox");
-        //document.getElementById("tbl5").style.display = "none";
+        feld5.classList.remove("hw");
+        feld5.classList.add("fw");
+        document.getElementById("tbl5").style.display = "none";
 
     } else if (players == 4) { //wenn 4 Spieler, blende Felder 5 und 6 aus
         feld5 = document.getElementById("4");
         feld6 = document.getElementById("5");
         feld5.style.display = "none";
         feld6.style.display = "none";
-        //document.getElementById("tbl4").style.display = "none";
-        //document.getElementById("tbl5").style.display = "none";
+        document.getElementById("tbl4").style.display = "none";
+        document.getElementById("tbl5").style.display = "none";
 
     }
 
@@ -92,7 +92,11 @@ function mark(button) { //sorgt fuer korrekte Markierung der Spieler
             markedDist = false;
         }
         if (markedWinners > 0) { //wenn kein Gewinner ausgewählt, blende Punktevergabe aus
-            document.getElementById("scr").disabled = false;
+            if ((markedDist && allowedDist == 1) || (!markedDist && allowedDist == 0)) {
+                document.getElementById("scr").disabled = false;
+            } else {
+                document.getElementById("scr").disabled = true;
+            }
         } else {
             document.getElementById("scr").disabled = true;
         }
@@ -110,7 +114,7 @@ function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der 
     var text = button.innerHTML;
     switch (state) {
         case 0:
-            color = "blue";
+            color = "orange";
             text = "";
             break;
         case 1:
@@ -118,13 +122,13 @@ function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der 
             text = "(Sieger)";
             break;
         case 2:
-            color = "green";
+            color = "lightblue";
             text = "(Geber)";
             break;
         default:
             throw new IllegalArgumentException();
     }
-    button.style.backgroundcolor = color;
+    button.style.background = color;
     button.innerHTML = namen + " \n " + text;
 }
 
@@ -147,27 +151,46 @@ okBtn.onclick(close(true));
 abBtn.onclick(close(false));
 */
 
-var score = 0;
+var Pscore = 0;
+var Mscore = 0;
+var wins = 0;
 
 function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Namen veranwtortlich
     var allowedWinners = localStorage.getItem("allowedWinners");
     var allowedDist = localStorage.getItem("allowdDist");
+    var number = localStorage.getItem("playerNo");
     var modal = document.getElementById("scoreSelect");
     var gewNamen = "";
+    var verNamen = "";
     var namen = localStorage.getItem("namen").split(",");
 
-    for (i = 0; i < 6; i++) { //alle Spieler auf Status 1 werden als Gewinner herausgesucht
+    for (i = 0; i < number; i++) { //alle Spieler auf Status 1 werden als Gewinner herausgesucht
         if (marking[i] == 1) {
             gewNamen = gewNamen + " " + namen[i];
+            wins++;
+        } else if (marking[i] == 0) {
+            verNamen = verNamen + " " + namen[i];
         }
     }
     document.getElementById("winTxt").innerHTML = gewNamen;
+    document.getElementById("verTxt").innerHTML = verNamen;
     modal.style.display = "block";
 }
 
 function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angezeigte Zahl und die Variable
-    score = value;
-    document.getElementById("pointTxt").innerHTML = score;
+    var number = Number(localStorage.getItem("number"));
+    if (wins == 1) { //SOLO gewonnen
+        Pscore = value;
+        Mscore = value / wins;
+    } else if (wins == 3 && (number == 4 || number == 5)) { //SOLO verloren bei 4 oder 5 Spielern
+        Pscore = value;
+        Mscore = value * wins;
+    } else {
+        Pscore = Mscore = value * wins;
+    }
+    if (Pscore - Mscore == 0) alert("PUNKTEFEHLER");
+    document.getElementById("PpointTxt").innerHTML = Pscore;
+    document.getElementById("MpointTxt").innerHTML = Mscore;
 }
 
 
@@ -175,15 +198,19 @@ function closer(set) { //Schließt die Punkteauswahl und übernimmt die Punkte b
     var modal = document.getElementById("scoreSelect");
     var punkte = localStorage.getItem("punkte").split(",");
     if (set) {
-        for (i = 0; i < 6; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
+        for (i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
             if (marking[i] == 1) {
-                punkte[i] = parseInt(punkte[i]) + score;
+                punkte[i] = parseInt(punkte[i]) + Pscore;
+            } else if (marking[i] == 0) {
+                punkte[i] = parseInt(punkte[i]) - Mscore;
             }
         }
         localStorage.setItem("punkte", punkte.toString())
-    } else {}
+    }
     modal.style.display = "none";
-    score = 0;
+    Pscore = 0;
+    Mscore = 0;
+    wins = 0;
     nextRound();
 }
 

@@ -23,14 +23,18 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
         feld5 = document.getElementById("4");
         feld6 = document.getElementById("5");
         feld6.style.display = "none";
-        feld5.classList.remove("hwBox");
-        feld5.classList.add("fwBox");
+        feld5.classList.remove("hw");
+        feld5.classList.add("fw");
+        document.getElementById("tbl5").style.display = "none";
 
     } else if (players == 4) { //wenn 4 Spieler, blende Felder 5 und 6 aus
         feld5 = document.getElementById("4");
         feld6 = document.getElementById("5");
         feld5.style.display = "none";
         feld6.style.display = "none";
+        document.getElementById("tbl4").style.display = "none";
+        document.getElementById("tbl5").style.display = "none";
+
     }
 
     if (localStorage.getItem("runde") == null) {
@@ -101,12 +105,12 @@ function mark(button) { //sorgt fuer korrekte Markierung der Spieler
 
 function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der Spielerfelder
     var button = document.getElementById(buttonID);
-    var name = namen = localStorage.getItem("namen").split(",")[buttonID];
+    var namen = localStorage.getItem("namen").split(",")[buttonID];
     var color;
     var text = button.innerHTML;
     switch (state) {
         case 0:
-            color = "blue";
+            color = "orange";
             text = "";
             break;
         case 1:
@@ -114,13 +118,13 @@ function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der 
             text = "(Sieger)";
             break;
         case 2:
-            color = "green";
+            color = "lightblue";
             text = "(Geber)";
             break;
         default:
             throw new IllegalArgumentException();
     }
-    button.style.backgroundcolor = color;
+    button.style.background = color;
     button.innerHTML = namen + " \n " + text;
 }
 
@@ -201,8 +205,23 @@ function nextRound() {
 }
 
 function showResult() {
+    var namen = localStorage.getItem("namen").split(",");
+    var punkte = localStorage.getItem("punkte").split(",");
+    var number = Number(localStorage.getItem("number"));
+
+    document.getElementById("name0").innerHTML = namen[0];
+    document.getElementById("pnt0").innerHTML = punkte[0];
+    document.getElementById("name1").innerHTML = namen[1];
+    document.getElementById("pnt1").innerHTML = punkte[1];
+    document.getElementById("name2").innerHTML = namen[2];
+    document.getElementById("pnt2").innerHTML = punkte[2];
+    document.getElementById("name3").innerHTML = namen[3];
+    document.getElementById("pnt3").innerHTML = punkte[3];
+    document.getElementById("name4").innerHTML = namen[4];
+    document.getElementById("pnt4").innerHTML = punkte[4];
+    document.getElementById("name5").innerHTML = namen[5];
+    document.getElementById("pnt5").innerHTML = punkte[5];
     document.getElementById("table").style.display = "block";
-    //TODO Punkte vernünftig anzeigen
 }
 
 function closeTable() {
