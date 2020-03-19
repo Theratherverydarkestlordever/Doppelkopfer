@@ -174,21 +174,28 @@ function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Name
     }
     document.getElementById("winTxt").innerHTML = gewNamen;
     document.getElementById("verTxt").innerHTML = verNamen;
+    document.getElementById("PpointTxt").innerHTML = Pscore;
+    document.getElementById("MpointTxt").innerHTML = Mscore;
     modal.style.display = "block";
 }
 
 function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angezeigte Zahl und die Variable
-    var number = Number(localStorage.getItem("number"));
+    var number = Number(localStorage.getItem("playerNo"));
+    var geber = (number == 5) ? 1 : 0;
     if (wins == 1) { //SOLO gewonnen
         Pscore = value;
-        Mscore = value / wins;
-    } else if (wins == 3 && (number == 4 || number == 5)) { //SOLO verloren bei 4 oder 5 Spielern
+        Mscore = value / (number - wins - geber);
+        console.log("hier1 " + number);
+    } else if (wins == (number - geber - 1)) { //&& (number == 4 || number == 5)) { //SOLO verloren bei 4 oder 5 Spielern
         Pscore = value;
         Mscore = value * wins;
+        console.log("hier2");
     } else {
-        Pscore = Mscore = value * wins;
+        Pscore = value;
+        Mscore = value * wins / (number - wins - geber);
+        console.log("hier3");
     }
-    if (Pscore - Mscore == 0) alert("PUNKTEFEHLER");
+    if (Pscore * wins - Mscore * (number - wins - geber) != 0) alert("PUNKTEFEHLER");
     document.getElementById("PpointTxt").innerHTML = Pscore;
     document.getElementById("MpointTxt").innerHTML = Mscore;
 }
@@ -206,12 +213,14 @@ function closer(set) { //Schließt die Punkteauswahl und übernimmt die Punkte b
             }
         }
         localStorage.setItem("punkte", punkte.toString())
+
+        nextRound();
     }
     modal.style.display = "none";
     Pscore = 0;
     Mscore = 0;
     wins = 0;
-    nextRound();
+
 }
 
 styled = false;
@@ -229,6 +238,7 @@ function nextRound() {
     document.getElementById("round").innerHTML = "Runde " + ++round;
     localStorage.setItem("round", round);
     document.getElementById("scr").disabled = true;
+    return;
 }
 
 function showResult() {
