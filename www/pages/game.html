@@ -15,7 +15,8 @@
     <h1 class="fw Box" id="round">Namensauswahl</h1>
     <div class="fw Box" id="nameText">Willkommen im Spiel. Tippe jedes Feld an, um einen Namen auszuwählen.</div>
     <!--<div class="fw Box" id="gameText">Markiere maximal <b><span id="allowedWinNo">x</span></b> Sieger durch Einfachklick, markiere <b><span id="allowedDistNo">x</span></b> Geber durch Doppelklick.</div>-->
-    <div class="fw Box">Markiere bei fünf Spielern den Geber durch Doppelklick, markiere die Gewinner durch einfachen Klick.</div>
+    <div class="fw Box" id="tutorialText2">Markiere zuerst den Geber durch doppeltes Antippen.</div>
+    <div class="fw Box" id="tutorialText2">Markiere die Gewinner durch einmaliges Antippen.</div>
     <div class="hw Box player" id="0" onclick="mark(this)" oncontextmenu="alert('hey')">Spieler 1</div>
     <div class="hw Box player" id="1" onclick="mark(this)">Spieler 2</div>
     <div class="hw Box player" id="2" onclick="mark(this)">Spieler 3</div>
@@ -88,30 +89,37 @@
             <table>
                 <tr>
                     <th>Spieler</th>
+                    <th></th>
                     <th>Punkte</th>
                 </tr>
                 <tr>
                     <td id="name0">Spieler 1</td>
+                    <td></td>
                     <td id="pnt0">Punkte Spieler 1</td>
                 </tr>
                 <tr>
                     <td id="name1">Spieler 2</td>
+                    <td></td>
                     <td id="pnt1">Punkte Spieler 2</td>
                 </tr>
                 <tr>
                     <td id="name2">Spieler 3</td>
+                    <td></td>
                     <td id="pnt2">Punkte Spieler 3</td>
                 </tr>
                 <tr>
                     <td id="name3">Spieler 4</td>
+                    <td></td>
                     <td id="pnt3">Punkte Spieler 4</td>
                 </tr>
                 <tr id="tbl4">
                     <td id="name4">Spieler 5</td>
+                    <td></td>
                     <td id="pnt4">Punkte Spieler 5</td>
                 </tr>
                 <tr id="tbl5">
                     <td id="name5">Spieler 6</td>
+                    <td></td>
                     <td id="pnt5">Punkte Spieler 6</td>
                 </tr>
             </table>

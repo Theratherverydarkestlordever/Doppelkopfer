@@ -139,6 +139,7 @@ function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der 
 function resetMarking() { //Setzt Markierungen zurück
     marking = [0, 0, 0, 0, 0, 0];
     markedWinners = 0;
+    markedDist = false;
     for (i = 0; i < 6; i++) updateButtonStyle(i, 0);
 
 }
@@ -204,6 +205,7 @@ function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angez
 function closer(set) { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false //TODO FERTIG //warum wird nicht ausgeführt?
     var modal = document.getElementById("scoreSelect");
     var punkte = localStorage.getItem("punkte").split(",");
+    var number = localStorage.getItem("playerNo");
     if (set) {
         for (i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
             if (marking[i] == 1) {
