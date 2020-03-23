@@ -81,7 +81,8 @@ button {
     border-radius: 5px;
 }
 
-#clickTbl td {
+#clickTbl td,
+#nameSelect td {
     width: 20%;
     padding: 10px;
     margin: 5px;
