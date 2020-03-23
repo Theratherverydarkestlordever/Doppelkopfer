@@ -6,10 +6,10 @@
     </feature>
     <name>Doppelkopfer</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        App zur Zählung der Punkte beim Doppelkopf.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="johann.ritter999@gmail.com" href="">
+        Johann Ritter
     </author>
     <content src="index.html" />
     <access origin="*" />

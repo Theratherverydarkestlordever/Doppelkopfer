@@ -14,10 +14,18 @@
     <!--<iframe id="frame" src="pages/main.html"></iframe>-->
     <div class="fw Box">Herzlich willkommen! \\ Bitte w&auml;hle eine der folgenden Optionen:</div>
     <a class="fw Box" href="pages/number.html">Neues Spiel starten</a>
+    <a class="fw Box" href="pages/game.html" id="return" style="display:none">Spiel fortsetzen</a>
     <!--<p onclick="changePage('number','0')">TEST</p>
     <p id="testNo">Spielerzahl sollte hier erscheinen</p>-->
 
 
+    <script type="text/javascript">
+        alert(localStorage.getItem("running"));
+        if (localStorage.getItem("running") == "1") {
+            alert("hier");
+            doucment.getElementById("return").style.display = "block";
+        }
+    </script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
 </body>

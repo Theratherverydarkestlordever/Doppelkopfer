@@ -11,12 +11,12 @@
     <title>Spiel</title>
 </head>
 
-<body onload="style()">
-    <h1 class="fw Box" id="round">Namensauswahl</h1>
-    <div class="fw Box" id="nameText">Willkommen im Spiel. Tippe jedes Feld an, um einen Namen auszuwählen.</div>
+<body onload="style();running()">
+    <h1 class="fw Box" id="round">Runde 1</h1>
     <!--<div class="fw Box" id="gameText">Markiere maximal <b><span id="allowedWinNo">x</span></b> Sieger durch Einfachklick, markiere <b><span id="allowedDistNo">x</span></b> Geber durch Doppelklick.</div>-->
-    <div class="fw Box">Markiere bei fünf Spielern den Geber durch Doppelklick, markiere die Gewinner durch einfachen Klick.</div>
-    <div class="hw Box player" id="0" onclick="mark(this)" oncontextmenu="alert('hey')">Spieler 1</div>
+    <div class="fw Box" id="tutorialText2">Markiere zuerst den Geber durch doppeltes Antippen.</div>
+    <div class="fw Box" id="tutorialText2">Markiere die Gewinner durch einmaliges Antippen.</div>
+    <div class="hw Box player" id="0" onclick="mark(this)">Spieler 1</div>
     <div class="hw Box player" id="1" onclick="mark(this)">Spieler 2</div>
     <div class="hw Box player" id="2" onclick="mark(this)">Spieler 3</div>
     <div class="hw Box player" id="3" onclick="mark(this)">Spieler 4</div>
@@ -24,19 +24,17 @@
     <div class="hw Box player" id="5" onclick="mark(this)">Spieler 6</div>
     <button onclick="showResult()" id="tbl">Tabelle</button>
     <button onclick="scoring()" id="scr">Punktevergabe</button>
-    <!--<button onclick="nextRound()" id="nextBtn">N&auml;chste Runde</button>-->
-    <button onclick="finishNames()" id="nms">Namenswahl beenden</button>
-
 
     <!-- Punkteauswahlfenster -->
     <div id="scoreSelect" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
-            <span class="close" id="abort" onclick="closer(false)">Abbrechen</span> <br><br>
-            <span class="close" id="ok" onclick="closer(true)">Punkte setzen</span>
+            <span class="close" id="abort" onclick="closeScore(false)">Abbrechen</span> <br><br>
+            <span class="close" id="ok" onclick="closeScore(true)">Punkte setzen</span>
             <p>Bitte wähle die Punkte für die Gewinner:</p>
-            <p>Beim Schließen dieses Fensters werden nach der aktuellen Auswahl <b><span id="pointTxt">0</span></b> Punkte an folgende Spieler vergeben: <b><span id="winTxt"></span></b></p>
+            <p><b> + <span id="PpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="winTxt"></span></b></p>
+            <p><b> - <span id="MpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="verTxt"></span></b></p>
             <table id="clickTbl" style="width:100%">
                 <tr>
                     <td onclick="setScore(0)">0</td>
@@ -87,30 +85,37 @@
             <table>
                 <tr>
                     <th>Spieler</th>
+                    <th></th>
                     <th>Punkte</th>
                 </tr>
                 <tr>
                     <td id="name0">Spieler 1</td>
+                    <td></td>
                     <td id="pnt0">Punkte Spieler 1</td>
                 </tr>
                 <tr>
                     <td id="name1">Spieler 2</td>
+                    <td></td>
                     <td id="pnt1">Punkte Spieler 2</td>
                 </tr>
                 <tr>
                     <td id="name2">Spieler 3</td>
+                    <td></td>
                     <td id="pnt2">Punkte Spieler 3</td>
                 </tr>
                 <tr>
                     <td id="name3">Spieler 4</td>
+                    <td></td>
                     <td id="pnt3">Punkte Spieler 4</td>
                 </tr>
                 <tr id="tbl4">
                     <td id="name4">Spieler 5</td>
+                    <td></td>
                     <td id="pnt4">Punkte Spieler 5</td>
                 </tr>
                 <tr id="tbl5">
                     <td id="name5">Spieler 6</td>
+                    <td></td>
                     <td id="pnt5">Punkte Spieler 6</td>
                 </tr>
             </table>
@@ -119,7 +124,9 @@
 
     </div>
 
-    <script type="text/javascript" src="../js/index.js"></script>
+
+
+    <script type="text/javascript" src="../js/game.js"></script>
 </body>
 
 </html>
