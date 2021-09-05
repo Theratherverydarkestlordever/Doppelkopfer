@@ -5,16 +5,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap(edt).css">
     <link rel="stylesheet" type="text/css" href="../css/index.css">
-    <!--<script type="text/javascript" src="../cordova.js"></script>-->
+    <script type="text/javascript" src="../js/jQuery.js"></script>
 
     <title>Spiel</title>
 </head>
 
 <body onload="style();running()">
-    <h1 class="fw Box" id="round">Runde 1</h1>
+    <h1 class="fw Box" id="round">Spiel 1</h1>
     <!--<div class="fw Box" id="gameText">Markiere maximal <b><span id="allowedWinNo">x</span></b> Sieger durch Einfachklick, markiere <b><span id="allowedDistNo">x</span></b> Geber durch Doppelklick.</div>-->
-    <div class="fw Box" id="tutorialText2">Markiere zuerst den Geber durch doppeltes Antippen.</div>
+    <div class="fw Box" id="tutorialText">Markiere zuerst den Geber durch doppeltes Antippen.</div>
     <div class="fw Box" id="tutorialText2">Markiere die Gewinner durch einmaliges Antippen.</div>
     <div class="hw Box player" id="0" onclick="mark(this)">Spieler 1</div>
     <div class="hw Box player" id="1" onclick="mark(this)">Spieler 2</div>
@@ -22,58 +23,79 @@
     <div class="hw Box player" id="3" onclick="mark(this)">Spieler 4</div>
     <div class="hw Box player" id="4" onclick="mark(this)">Spieler 5</div>
     <div class="hw Box player" id="5" onclick="mark(this)">Spieler 6</div>
-    <button onclick="showResult()" id="tbl">Tabelle</button>
-    <button onclick="scoring()" id="scr">Punktevergabe</button>
+    <!--<button onclick="showResult()" id="tbl">Tabelle</button>-->
+    <button onclick="scoring()" id="scr" id="scr">Punktevergabe</button>
+
 
     <!-- Punkteauswahlfenster -->
     <div id="scoreSelect" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
+            <!--
             <span class="close" id="abort" onclick="closeScore(false)">Abbrechen</span> <br><br>
             <span class="close" id="ok" onclick="closeScore(true)">Punkte setzen</span>
+            -->
             <p>Bitte wähle die Punkte für die Gewinner:</p>
             <p><b> + <span id="PpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="winTxt"></span></b></p>
             <p><b> - <span id="MpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="verTxt"></span></b></p>
             <table id="clickTbl" style="width:100%">
                 <tr>
-                    <td onclick="setScore(0)">0</td>
-                    <td onclick="setScore(1)">1</td>
-                    <td onclick="setScore(2)">2</td>
-                    <td onclick="setScore(3)">3</td>
+                    <td id="sc0" onclick="setScore(0)">0</td>
+                    <td id="sc1" onclick="setScore(1)">1</td>
+                    <td id="sc2" onclick="setScore(2)">2</td>
+                    <td id="sc3" onclick="setScore(3)">3</td>
 
                 </tr>
                 <tr>
-                    <td onclick="setScore(4)">4</td>
-                    <td onclick="setScore(5)">5</td>
-                    <td onclick="setScore(6)">6</td>
-                    <td onclick="setScore(7)">7</td>
+                    <td id="sc4" onclick="setScore(4)">4</td>
+                    <td id="sc5" onclick="setScore(5)">5</td>
+                    <td id="sc6" onclick="setScore(6)">6</td>
+                    <td id="sc7" onclick="setScore(7)">7</td>
 
                 </tr>
                 <tr>
-                    <td onclick="setScore(8)">8</td>
-                    <td onclick="setScore(9)">9</td>
-                    <td onclick="setScore(10)">10</td>
-                    <td onclick="setScore(11)">11</td>
+                    <td id="sc8" onclick="setScore(8)">8</td>
+                    <td id="sc9" onclick="setScore(9)">9</td>
+                    <td id="sc10" onclick="setScore(10)">10</td>
+                    <td id="sc11" onclick="setScore(11)">11</td>
 
                 </tr>
                 <tr>
-                    <td onclick="setScore(12)">12</td>
-                    <td onclick="setScore(13)">13</td>
-                    <td onclick="setScore(14)">14</td>
-                    <td onclick="setScore(15)">15</td>
+                    <td id="sc12" onclick="setScore(12)">12</td>
+                    <td id="sc13" onclick="setScore(13)">13</td>
+                    <td id="sc14" onclick="setScore(14)">14</td>
+                    <td id="sc15" onclick="setScore(15)">15</td>
 
                 </tr>
                 <tr>
-                    <td onclick="setScore(16)">16</td>
-                    <td onclick="setScore(17)">17</td>
-                    <td onclick="setScore(18)">18</td>
-                    <td onclick="setScore(19)">19</td>
+                    <td id="sc16" onclick="setScore(16)">16</td>
+                    <td id="sc17" onclick="setScore(17)">17</td>
+                    <td id="sc18" onclick="setScore(18)">18</td>
+                    <td id="sc19" onclick="setScore(19)">19</td>
+                </tr>
+                <tr>
+                    <button id="abort" onclick="closeScore(false)">Abbruch</button>
+                    <button id="ok" onclick="closeScore(true)">Punkte setzen und nächstes Spiel starten</button>
                 </tr>
             </table>
+
         </div>
 
     </div>
+
+    
+    <table id="queryTableGames" class="table table-striped table-bordered table-sm">
+
+    </table>
+
+    <table id="queryTableSolo" class="table table-striped table-bordered table-sm">
+
+    </table>
+
+    <table id="queryTableResult" class="table table-bordered table-sm">
+
+    </table>
 
     <!-- Tabellenfenster -->
     <div id="table" class="modal">
@@ -81,7 +103,12 @@
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close" onclick="closeTable()">&times;</span> <br><br>
+
+
+
+
             <!-- TODO schön sortieren (jQuery) und Punkte dynamisch anzeigen-->
+            <!--
             <table>
                 <tr>
                     <th>Spieler</th>
@@ -119,6 +146,7 @@
                     <td id="pnt5">Punkte Spieler 6</td>
                 </tr>
             </table>
+            -->
 
         </div>
 

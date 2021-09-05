@@ -14,15 +14,16 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
         feld6.style.display = "none";
         feld5.classList.remove("hw");
         feld5.classList.add("fw");
-        document.getElementById("tbl5").style.display = "none";
+        //document.getElementById("tbl5").style.display = "none";
 
     } else if (players == 4) { //wenn 4 Spieler, blende Felder 5 und 6 aus
         feld5 = document.getElementById("4");
         feld6 = document.getElementById("5");
         feld5.style.display = "none";
         feld6.style.display = "none";
-        document.getElementById("tbl4").style.display = "none";
-        document.getElementById("tbl5").style.display = "none";
+        //document.getElementById("tbl4").style.display = "none";
+        //document.getElementById("tbl5").style.display = "none";
+        document.getElementById("tutorialText").style.display = "none";
 
     }
 
@@ -31,11 +32,11 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
     }
 
     document.getElementById("scr").disabled = true;
-    for (i = 0; i < 6; i++) updateButtonStyle(i, 0);
+    for (i = 0; i < 6; i++) updateButtonStylePlayer(i, 0);
 
 }
 
-function mark(button) { //sorgt fuer korrekte Markierung der Spieler
+function mark(button) { //sorgt fuer korrekte Markierung der Spieler bei Punkteauswahl
     var buttonID = Number(button.id); // TODO ID Abfragen
 
     var allowedWinners = localStorage.getItem("allowedWinners");
@@ -71,11 +72,11 @@ function mark(button) { //sorgt fuer korrekte Markierung der Spieler
     } else {
         document.getElementById("scr").disabled = true;
     }
-    updateButtonStyle(button.id, marking[buttonID]);
+    updateButtonStylePlayer(button.id, marking[buttonID]);
 
 }
 
-function updateButtonStyle(buttonID, state) { //aktualisiert Farbe und Text der Spielerfelder
+function updateButtonStylePlayer(buttonID, state) { //aktualisiert Farbe und Text der Spielerfelder
     var button = document.getElementById(buttonID);
     var namen = localStorage.getItem("namen").split(",")[buttonID];
     var color;
@@ -105,8 +106,7 @@ function resetMarking() { //Setzt Markierungen zurück
     marking = [0, 0, 0, 0, 0, 0];
     markedWinners = 0;
     markedDist = false;
-    for (i = 0; i < 6; i++) updateButtonStyle(i, 0);
-
+    for (i = 0; i < 6; i++) updateButtonStylePlayer(i, 0);
 }
 
 
@@ -138,49 +138,102 @@ function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Name
     modal.style.display = "block";
 }
 
+function resetButtonStyleScore(id) {
+    for (i = 0; i < 20; i++) {
+        document.getElementById("sc" + i).style.background = "orange";
+    }
+}
+
+function setButtonStyleScore(id) {
+    resetButtonStyleScore();
+    if (id != -1) document.getElementById("sc" + id).style.background = "lightblue";
+}
+
+var pScoreSave = 0;
+var mScoreSave = 0;
+
 function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angezeigte Zahl und die Variable
     var number = Number(localStorage.getItem("playerNo"));
     var geber = (number == 5) ? 1 : 0;
     if (wins == 1) { //SOLO gewonnen
         Pscore = value;
         Mscore = value / (number - wins - geber);
-        console.log("hier1 " + number);
     } else if (wins == (number - geber - 1)) { //&& (number == 4 || number == 5)) { //SOLO verloren bei 4 oder 5 Spielern
         Pscore = value;
         Mscore = value * wins;
-        console.log("hier2");
     } else {
         Pscore = value;
         Mscore = value * wins / (number - wins - geber);
-        console.log("hier3");
     }
     if (Pscore * wins - Mscore * (number - wins - geber) != 0) alert("PUNKTEFEHLER");
+    if (Pscore == pScoreSave) {
+        Pscore = 0;
+        Mscore = 0;
+        value = -1;
+    }
+    pScoreSave = Pscore;
+    mScoreSave = Mscore;
     document.getElementById("PpointTxt").innerHTML = Pscore;
-    document.getElementById("MpointTxt").innerHTML = Mscore;
+    document.getElementById("MpointTxt").innerHTML = Mscore.toFixed(2);
+    setButtonStyleScore(value);
 }
 
 
-function closeScore(set) { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false //TODO FERTIG //warum wird nicht ausgeführt?
+function closeScore(set) { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false
     var modal = document.getElementById("scoreSelect");
     var punkte = localStorage.getItem("punkte").split(",");
     var number = localStorage.getItem("playerNo");
+    var gameTable = JSON.parse(localStorage.getItem("gameTable"));
+    var soloTable = JSON.parse(localStorage.getItem("soloTable"));
+    var cntGewinner = 0;
     if (set) {
+
         for (i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
-            if (marking[i] == 1) {
+            if (marking[i] == 1) { //GEWINNER
                 punkte[i] = parseInt(punkte[i]) + Pscore;
-            } else if (marking[i] == 0) {
+                gameTable[i].push(punkte[i]);
+                cntGewinner++;
+            } else if (marking[i] == 0) { //VERLIERER
                 punkte[i] = parseInt(punkte[i]) - Mscore;
+                gameTable[i].push(punkte[i]);
+
+            } else if (marking[i] == 2) { //GEBER
+                gameTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
+            } else {
+                alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
             }
         }
-        localStorage.setItem("punkte", punkte.toString())
 
+
+        if (cntGewinner == 1) { //SOLO! 
+            for (i = 0; i < number; i++) {
+                if (marking[i] == 1) { //GEWINNER
+                    soloTable[i].push(Pscore);
+                } else if (marking[i] == 0) { //VERLIERER
+                    soloTable[i].push((-1) * Mscore);
+                } else if (marking[i] == 2) { //GEBER
+                    soloTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
+                } else {
+                    alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
+                }
+            }
+            gameTable[number].push(Pscore + "S");
+            soloTable[number].push(localStorage.getItem("round"));
+        } else {
+            gameTable[number].push(Pscore);
+        }
+
+        localStorage.setItem("punkte", punkte.toString())
+        localStorage.setItem("gameTable", JSON.stringify(gameTable));
+        localStorage.setItem("soloTable", JSON.stringify(soloTable));
         nextRound();
     }
+
     modal.style.display = "none";
     Pscore = 0;
     Mscore = 0;
     wins = 0;
-
+    resetButtonStyleScore();
 }
 
 styled = false;
@@ -191,14 +244,150 @@ function nextRound() {
     document.getElementById("round").innerHTML = "Runde " + ++round;
     localStorage.setItem("round", round);
     document.getElementById("scr").disabled = true;
+    emptyTable();
+    showResult();
     return;
 }
 
 function showResult() {
     var namen = localStorage.getItem("namen").split(",");
     var punkte = localStorage.getItem("punkte").split(",");
-    var number = Number(localStorage.getItem("number"));
+    var number = Number(localStorage.getItem("playerNo"));
+    var gameTable = JSON.parse(localStorage.getItem("gameTable"));
+    var soloTable = JSON.parse(localStorage.getItem("soloTable"));
+    var round = localStorage.getItem("round") - 1;
 
+
+    //Spiel-Tabelle
+    var row = "<thead>\n<tr>";
+    row += "\n<th scope='col'>Nr.</th>";
+    row += "\n<th scope='col'>P</th>";
+    for (i = 0; i < number; i++) {
+        row += "\n<th scope='col'>" + namen[i] + "</th>";
+    }
+    row += "\n</thead>\n</tr>";
+    $("#queryTableGames").append(row);
+
+    $("#queryTableGames").append("<tbody>");
+
+    for (j = 0; j < round; j++) {
+        row = "<tr>";
+        row += "<th scope='row'>" + (j + 1) + "</th>";
+        row += "<td>" + gameTable[number][j] + "</td>";
+
+        for (i = 0; i < number; i++) {
+            var val = gameTable[i][j];
+            if (val == null) val = "";
+            row += "\n<td>" + val + "</td>";
+        }
+        row += "</tr>"
+        $("#queryTableGames").append(row);
+    }
+
+    $("#queryTableGames").append("</tbody>");
+
+    //SOLO-Tabelle
+    if (soloTable[0].length > 0) {
+        row = "<thead>\n<tr>";
+        row += "\n<th scope='col'>Nr.</th>";
+        row += "\n<th scope='col'>R</th>";
+        for (i = 0; i < number; i++) {
+            row += "\n<th scope='col'>" + namen[i] + "</th>";
+        }
+        row += "\n</thead>\n</tr>";
+        $("#queryTableSolo").append(row);
+
+        $("#queryTableSolo").append("<tbody>");
+        for (j = 0; j < soloTable[0].length; j++) {
+            row = "<tr>";
+            row += "<th scope='row'>S" + (j + 1) + "</th>";
+            row += "<td>" + soloTable[number][j] + "</td>";
+
+            for (i = 0; i < number; i++) {
+                var val = soloTable[i][j];
+                if (val == null) val = "";
+                row += "\n<td>" + val + "</td>";
+            }
+            row += "</tr>"
+            $("#queryTableSolo").append(row);
+        }
+        $("#queryTableSolo").append("</tbody>");
+    }
+
+    //ERGEBNIS
+    row = "<thead>\n<tr>";
+    for (i = 0; i < number; i++) {
+        row += "\n<th scope='col'>" + namen[i] + "</th>";
+    }
+    row += "\n</thead>\n</tr>";
+    $("#queryTableResult").append(row);
+
+    $("#queryTableResult").append("<tbody>");
+
+    row = "<tr>";
+    for (i = 0; i < number; i++) {
+        row += "\n<th>" + punkte[i] + "</th>";
+    }
+    row += "</tr>";
+    $("#queryTableResult").append(row);
+
+    $("#queryTableResult").append("</tbody>");
+
+
+
+    /* OHNE BOOTSTRAP
+     var row = "<tr>";
+     row += "<th>Nr.</th>";
+     row += "<th>P</th>";
+     for(i=0;i<number;i++){
+         row+="\n<th>"+namen[i]+"</th>";
+     }
+     row += "\n</tr>";
+     $("#queryTableGames").append(row);
+    
+     
+     for(j=0;j<round;j++){
+         row = "<tr>";
+         row += "<th>"+(j+1)+"</th>";
+         row += "<th>"+gameTable[number][j]+"</th>";
+         
+         for(i=0;i<number;i++){
+             var val = gameTable[i][j];
+             if(val == null) val = "";
+             row+="\n<th>"+val+"</th>";
+         }
+         row += "</tr>"
+         $("#queryTableGames").append(row);
+     }
+ 
+    
+     row = "<tr>";
+     for(i=0;i<number;i++){
+         row+="\n<th>"+namen[i]+"</th>";
+     }
+     row += "\n</tr>";
+     $("#queryTableSolo").append(row);
+ 
+     for(j=0;j<number;j++){
+         row = "<tr>";
+         for(i=0;i<number;i++){
+             var val = soloTable[i][j];
+             if(val == null) val = "";
+             row+="\n<th>"+val+"</th>";
+         }
+         row += "</tr>"
+         $("#queryTableSolo").append(row);
+     }
+ 
+     row = "<tr>";
+     for(i=0;i<number;i++){
+         row+="\n<th>"+punkte[i]+"</th>";
+     }
+     row += "\n</tr>";
+     $("#queryTableResult").append(row);
+     */
+
+    /*
     document.getElementById("name0").innerHTML = namen[0];
     document.getElementById("pnt0").innerHTML = punkte[0];
     document.getElementById("name1").innerHTML = namen[1];
@@ -211,9 +400,17 @@ function showResult() {
     document.getElementById("pnt4").innerHTML = punkte[4];
     document.getElementById("name5").innerHTML = namen[5];
     document.getElementById("pnt5").innerHTML = punkte[5];
-    document.getElementById("table").style.display = "block";
+    */
+
+
+    //document.getElementById("table").style.display = "block";
 }
 
-function closeTable() {
-    document.getElementById("table").style.display = "none";
+
+function emptyTable() {
+    //document.getElementById("table").style.display = "none";
+    $("#queryTableGames").empty();
+    $("#queryTableSolo").empty();
+    $("#queryTableResult").empty();
+
 }

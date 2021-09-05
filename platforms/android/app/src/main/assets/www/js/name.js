@@ -30,6 +30,7 @@ function nameIt(pBtn) {
     if (markedNameBtn != null) {
         markedNameBtn.style.background = "orange";
     }
+    name = "";
     document.getElementById("nameSelect").style.display = "block";
     playerBtn = pBtn;
 }
@@ -58,6 +59,7 @@ function closeName(ok) {
             var numtxt = buttonID + 1;
             entered = prompt("Bitte wähle einen Namen: ", "Spieler " + numtxt);
         }
+        if(entered == "") entered = null;
         if (entered != null) {
             namen = localStorage.getItem("namen").split(",");
             namen[buttonID] = entered;
@@ -66,7 +68,7 @@ function closeName(ok) {
         }
     }
     //markedNameBtn = null;
-    name = "";
+    name = null;
     modal.style.display = "none";
 
 
