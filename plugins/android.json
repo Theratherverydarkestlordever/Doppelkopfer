@@ -9,6 +9,9 @@
   "installed_plugins": {
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "jr.doppelkopf.dev"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "jr.doppelkopf.dev"
     }
   },
   "dependent_plugins": {}

@@ -241,7 +241,7 @@ styled = false;
 function nextRound() {
     resetMarking();
     var round = localStorage.getItem("round");
-    document.getElementById("round").innerHTML = "Runde " + ++round;
+    document.getElementById("round").innerHTML = "Spiel " + ++round;
     localStorage.setItem("round", round);
     document.getElementById("scr").disabled = true;
     emptyTable();

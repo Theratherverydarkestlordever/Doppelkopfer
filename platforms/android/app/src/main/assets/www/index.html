@@ -7,6 +7,7 @@
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <META HTTP-EQUIV="Access-Control-Allow-Origin" CONTENT="*.html">
+    <script type="text/javascript" src="js/jQuery.js"></script>
     <title>Doppelkopfzähler</title>
 </head>
 
@@ -15,8 +16,6 @@
     <div class="fw Box">Herzlich willkommen! \\ Bitte w&auml;hle eine der folgenden Optionen:</div>
     <a class="fw Box" href="pages/number.html">Neues Spiel starten</a>
     <a class="fw Box" href="pages/game.html" id="return" style="display:none">Spiel fortsetzen</a>
-    <!--<p onclick="changePage('number','0')">TEST</p>
-    <p id="testNo">Spielerzahl sollte hier erscheinen</p>-->
 
 
     <script type="text/javascript">
@@ -24,7 +23,8 @@
             doucment.getElementById("return").style.display = "block";
         }
 
-        
+
+        /*
         var test = [[1,2,3],[4,5,6],[7,8,9]];
         console.log(test.toString());
         var json = JSON.stringify(test);
@@ -34,8 +34,7 @@
         console.log(test2[1][1]);
         test2[2].push(test2[1][1]);
         console.log(test2.toString());
-        
-
+        */
     </script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
