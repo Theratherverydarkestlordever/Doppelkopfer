@@ -30,13 +30,14 @@ function startNewGame(number) {
 }
 
 
+
 function writeFile(fileEntry, dataObj) {
     // Create a FileWriter object for our FileEntry (log.txt).
     fileEntry.createWriter(function(fileWriter) {
 
         fileWriter.onwriteend = function() {
             console.log("Successful file write...");
-            readFile(fileEntry);
+            //readFile(fileEntry);
         };
 
         fileWriter.onerror = function(e) {
@@ -53,6 +54,47 @@ function writeFile(fileEntry, dataObj) {
     });
 }
 
+var readResult;
+
+
+/*
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+    //onDeviceReady2();
+
+    readFile();
+
+
+}
+
+function readFile() {
+
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function successCallback(fs) {
+        fs.root.getFile('names.txt', { create: true, exclusive: false }, successCallbackGet, errorCallback);
+
+        function successCallbackGet(fileEntry) {
+            fileEntry.file(function(file) {
+                var reader = new FileReader();
+
+                reader.onloadend = function(e) {
+                    readResult = this.result;
+                    if (readResult == null) readResult = "heyho";
+                    alert(readResult);
+                };
+                reader.readAsText(file);
+            }, errorCallback);
+        }
+    }, errorCallback);
+
+    function errorCallback(error) {
+        alert("ERROR: " + error.code)
+    }
+}
+
+/*
+
+// TEST FOR FILE-SYSTEM
 function onErrorLoadFs() {
     alert("an error occured while accessing file system");
 }
@@ -63,25 +105,12 @@ function onErrorCreateFile() {
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
-function openFS() {
-    var temp;
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
-
-        $("body").append("<p>file system open: " + fs.name + "</p>");
-        alert("fs " + fs);
-        alert("fs.name " + fs.name);
-        return fs;
-
-    }, onErrorLoadFs);
-
-}
-
 function createFile(fs) {
     try {
         $("body").append("<p>trying to create file...</p>");
-        fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function(fileEntry) {
+        fs.root.getFile("names.txt", { create: true, exclusive: false }, function(fileEntry) {
 
-            $("body").append("fileEntry is file?" + fileEntry.isFile.toString());
+            $("body").append("fileEntry is file? " + fileEntry.isFile.toString());
             // fileEntry.name == 'someFile.txt'
             // fileEntry.fullPath == '/someFile.txt'
             writeFile(fileEntry, "hello");
@@ -90,9 +119,33 @@ function createFile(fs) {
     } catch (e) {
         $("body").append("<p>(create): " + e.stack + "</p>");
     }
+
+    /*
+    $("body").append("<p>trying to read file...</p>");
+    fs.root.getFile('names.txt', {}, function(fileEntry) {
+
+        fileEntry.file(function(file) {
+            var reader = new FileReader();
+
+            reader.onloadend = function(e) {
+                $("body").append("<p>" + this.result + "</p>");
+            };
+            reader.readAsText(file);
+        }, errorCallback);
+    }, errorCallback);
+
+    
 }
 
-function onDeviceReady() {
+function successCallback(fs) {
+
+}
+
+function errorCallback(error) {
+    alert("ERROR: " + error.code)
+}
+
+function onDeviceReady2() {
 
     try {
         var filesystem = null;
@@ -100,7 +153,17 @@ function onDeviceReady() {
         $("body").append("<p>File-System (DEBUG):</p>");
         //$("body").append("<p>" + cordova.file.toString() + "</p>");
 
-        filesystem = openFS();
+
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
+
+            $("body").append("<p>file system open: " + fs.name + "</p>");
+            alert("fs " + fs);
+            alert("fs.name " + fs.name);
+            filesystem = fs;
+
+        }, onErrorLoadFs);
+
+        //filesystem = openFS();
 
         setTimeout(function() {
             alert("filesystem: " + filesystem);
@@ -114,4 +177,4 @@ function onDeviceReady() {
     } catch (e) {
         $("body").append("<p>(main): " + e.stack + "</p>");
     }
-}
+} */

@@ -82,15 +82,15 @@ button {
 }
 
 #clickTbl td,
-#nameSelect td ,
-.modal-content > table > tr > td {
+#nameSelect td,
+.modal-content>table>tr>td {
     width: 20%;
     padding: 10px;
-    margin:10px, 10px,10px,10px !important;
+    margin: 10px, 10px, 10px, 10px !important;
     border-radius: 5px;
     background-color: orange;
-} 
+}
 
-.table{
+.table {
     max-width: 100%;
 }

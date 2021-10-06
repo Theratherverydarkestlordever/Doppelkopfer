@@ -3,11 +3,43 @@ var markedDist = false; //Geber gesetzt ?
 var marking = [0, 0, 0, 0, 0, 0] //Speicher für Markierungen
 
 function running() {
-    localStorage.setItem("running", "1");
+    var running = localStorage.getItem("running");
+    if (running == 1) {
+        showResult();
+        document.getElementById("round").innerHTML = "Spiel " + localStorage.getItem("round");
+    } else {
+        localStorage.setItem("running", "1");
+    }
+}
+
+function endGame() {
+    var round = localStorage.getItem("round") - 1;
+    var players = localStorage.getItem("playerNo");
+    console.log(Math.round(round / players) * players + "==" + round);
+    if (Math.round(round / players) * players == round) {
+        document.getElementById("warning").style.display = "none";
+    }
+    document.getElementById("quit").style.display = "block";
+}
+
+function quit(arg) {
+    document.getElementById("quit").style.display = "none";
+    if (arg) {
+        var boxes = document.getElementsByClassName("Box");
+        for (i = 0; i < 6; i++) document.getElementById(i).style.display = "none";
+        document.getElementById("scr").style.display = "none";
+        document.getElementById("end").style.display = "none";
+        document.getElementById("tutorialText").style.display = "none";
+        document.getElementById("tutorialText2").style.display = "none";
+        var string = "Ergebnis nach " + (localStorage.getItem("round") - 1) + " Spielen";
+        document.getElementById("round").innerHTML = string;
+        $("body").append('<a class="fw Box" href="../index.html">Hauptmenü</a>');
+        localStorage.setItem("running", 0);
+    }
 }
 
 function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeldern erscheint und diese ansprechend formatiert sind
-    players = localStorage.getItem("playerNo");
+    var players = localStorage.getItem("playerNo");
     if (players == 5) { //wenn 5 Spieler, blende Feld 6 aus und setze die Breite von Feld 5 von halbe auf volle Breite
         feld5 = document.getElementById("4");
         feld6 = document.getElementById("5");
@@ -25,10 +57,6 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
         //document.getElementById("tbl5").style.display = "none";
         document.getElementById("tutorialText").style.display = "none";
 
-    }
-
-    if (localStorage.getItem("runde") == null) {
-        localStorage.setItem("runde", 1);
     }
 
     document.getElementById("scr").disabled = true;

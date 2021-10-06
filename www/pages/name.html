@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <link rel="stylesheet" type="text/css" href="../css/index.css">
-    <!--<script type="text/javascript" src="../cordova.js"></script>-->
+    <script type="text/javascript" src="../cordova.js"></script>
 
     <title>Namen</title>
 </head>
@@ -28,7 +28,9 @@
         <!-- Modal content -->
         <div class="modal-content">
             <!--<span class="close" onclick="closeName(false)">&times;</span> <br><br>-->
-            <table>
+            <table id="nameTbl">
+
+                <!--
                 <tr>
                     <td onclick="selName(this)">Chris</td>
                     <td onclick="selName(this)">Edel</td>
@@ -43,13 +45,14 @@
                     <td onclick="selName(this)">Peter</td>
                     <td onclick="selName(this)">René</td>
                     <td onclick="selName(this)">Stephan</td>
-                    
+
                 </tr>
                 <tr>
                     <td onclick="selName(this)">Tanja</td>
-                    <td onclick="selName(this)">Werner</td>    
+                    <td onclick="selName(this)">Werner</td>
                     <td onclick="selName(this)">NEUER NAME</td>
                 </tr>
+                -->
             </table>
 
             <button onclick="closeName(false)">Abbruch</button>
@@ -63,6 +66,7 @@
     </div>
 
     <script type="text/javascript" src="../js/name.js"></script>
+    <script type="text/javascript" src="../js/jQuery.js"></script>
 </body>
 
 </html>

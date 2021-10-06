@@ -23,8 +23,8 @@
     <div class="hw Box player" id="3" onclick="mark(this)">Spieler 4</div>
     <div class="hw Box player" id="4" onclick="mark(this)">Spieler 5</div>
     <div class="hw Box player" id="5" onclick="mark(this)">Spieler 6</div>
-    <!--<button onclick="showResult()" id="tbl">Tabelle</button>-->
     <button onclick="scoring()" id="scr" id="scr">Punktevergabe</button>
+    <button onclick="endGame()" id="end">Spiel beenden</button>
 
 
     <!-- Punkteauswahlfenster -->
@@ -84,7 +84,7 @@
 
     </div>
 
-    
+
     <table id="queryTableGames" class="table table-striped table-bordered table-sm">
 
     </table>
@@ -98,56 +98,14 @@
     </table>
 
     <!-- Tabellenfenster -->
-    <div id="table" class="modal">
+    <div id="quit" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
-            <span class="close" onclick="closeTable()">&times;</span> <br><br>
-
-
-
-
-            <!-- TODO schön sortieren (jQuery) und Punkte dynamisch anzeigen-->
-            <!--
-            <table>
-                <tr>
-                    <th>Spieler</th>
-                    <th></th>
-                    <th>Punkte</th>
-                </tr>
-                <tr>
-                    <td id="name0">Spieler 1</td>
-                    <td></td>
-                    <td id="pnt0">Punkte Spieler 1</td>
-                </tr>
-                <tr>
-                    <td id="name1">Spieler 2</td>
-                    <td></td>
-                    <td id="pnt1">Punkte Spieler 2</td>
-                </tr>
-                <tr>
-                    <td id="name2">Spieler 3</td>
-                    <td></td>
-                    <td id="pnt2">Punkte Spieler 3</td>
-                </tr>
-                <tr>
-                    <td id="name3">Spieler 4</td>
-                    <td></td>
-                    <td id="pnt3">Punkte Spieler 4</td>
-                </tr>
-                <tr id="tbl4">
-                    <td id="name4">Spieler 5</td>
-                    <td></td>
-                    <td id="pnt4">Punkte Spieler 5</td>
-                </tr>
-                <tr id="tbl5">
-                    <td id="name5">Spieler 6</td>
-                    <td></td>
-                    <td id="pnt5">Punkte Spieler 6</td>
-                </tr>
-            </table>
-            -->
-
+            <p>Spiel beenden?</p>
+            <button id="abort" onclick="quit(false)">Nein</button>
+            <button id="ok" onclick="quit(true)">Ja</button>
+            <p id="warning">Nicht jeder Spieler war gleich oft am Zug!</p>
         </div>
 
     </div>
