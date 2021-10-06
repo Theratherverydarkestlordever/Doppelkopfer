@@ -24,8 +24,10 @@ function startNewGame(number) {
         [],
         []
     ];
+    hatSolo = [0,0,0,0,0]; //Markierung für das Pflichtsolo
     localStorage.setItem("gameTable", JSON.stringify(gameTable));
     localStorage.setItem("soloTable", JSON.stringify(soloTable));
+    localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
     window.location.assign("name.html");
 }
 
@@ -33,14 +35,14 @@ function startNewGame(number) {
 
 function writeFile(fileEntry, dataObj) {
     // Create a FileWriter object for our FileEntry (log.txt).
-    fileEntry.createWriter(function(fileWriter) {
+    fileEntry.createWriter(function (fileWriter) {
 
-        fileWriter.onwriteend = function() {
+        fileWriter.onwriteend = function () {
             console.log("Successful file write...");
             //readFile(fileEntry);
         };
 
-        fileWriter.onerror = function(e) {
+        fileWriter.onerror = function (e) {
             console.log("Failed file write: " + e.toString());
         };
 
@@ -134,7 +136,7 @@ function createFile(fs) {
         }, errorCallback);
     }, errorCallback);
 
-    
+
 }
 
 function successCallback(fs) {

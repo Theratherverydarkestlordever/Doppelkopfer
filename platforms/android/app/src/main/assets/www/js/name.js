@@ -21,11 +21,18 @@ function style() { //sorgt dafür, dass immer die richtige Anzahl an Spielerfeld
 
 }
 
-document.addEventListener("deviceready", importNames, false);
+//document.addEventListener("deviceready", onDeviceReady, false);
+/*
+function onDeviceReady(){
+    console.log("device is ready")
+    importNames(null);
+}*/
 
-function importNames() {
+function importNames(newName) {
+    console.log("got this new name: "+newName);
+    //if (typeof(newName)!= String) newName = "";
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function successCallback(fs) {
-        fs.root.getFile('names.txt', { create: true, exclusive: false }, successCallbackGet, errorCallback);
+        fs.root.getFile('names.txt', { create: true, exclusive: false }, successCallbackGet, errorCallbackGet);
 
         function successCallbackGet(fileEntry) {
             fileEntry.file(function(file) {
@@ -33,62 +40,101 @@ function importNames() {
 
                 reader.onloadend = function(e) {
                     readResult = this.result;
-                    console.log("readResult: " + readResult);
+                    //console.log("readResult: " + readResult);
+
+                    try {
+                        readResult = JSON.parse(readResult);
+                    } catch (e) {
+                        console.log("was faulty. i have to go for hardcoded backup");
+                        readResult = ["Chris", "Edel", "Gerd", "Lars", "Lena", "Michael", "Peter", "René", "Stephan", "Tanja", "Werner"];
+                    } finally{
+                        if(newName != "" && newName != null && !readResult.includes(newName)){
+                            readResult.push(newName);
+                            console.log("pushed "+newName);
+                        } 
+                        console.log("readResult vor write: "+readResult);
+                        writeNamesPersistently(fileEntry, Array.from(readResult));
+                        readResult.sort();
+                        readResult.push("NEUER NAME");
+                        createNameButtons(readResult);   
+                    }
+
+                    /*
                     if (readResult == null) {
                         console.log("i have to go for hardcoded backup");
                         readResult = ["Chris", "Edel", "Gerd", "Lars", "Lena", "Michael", "Peter", "René", "Stephan", "Tanja", "Werner"];
-                        fileEntry.createWriter(function(fileWriter) {
-
-                                fileWriter.onwriteend = function() {
-                                    console.log("Successful file write...");
-                                    //readFile(fileEntry);
-                                };
-
-                                fileWriter.onerror = function(e) {
-                                    console.log("Failed file write: " + e.toString());
-                                };
-
-                                fileWriter.write(JSON.stringify(readResult));
-                            }
-                            //exportNames(JSON.stringify(readResult));
-                        )
+                        if(newName != "" && newName != null) readResult.push(newName);
+                        console.log("readResult vor write: "+readResult);
+                        writeNamesPersistently(fileEntry, readResult).then(function(){
+                            readResult.sort();
+                            readResult.push("NEUER NAME");
+                            createNameButtons(readResult);
+                        })
                     } else {
                         console.log("i can read persistent file");
                         try {
                             readResult = JSON.parse(readResult);
+                            readResult.sort();
+                            readResult.push("NEUER NAME");
+                            createNameButtons(readResult);
                         } catch (e) {
-                            fileEntry.remove(function() {
-                                console.log('File removed.');
-                            }, errorCallback);
                             console.log("was faulty. i have to go for hardcoded backup");
                             readResult = ["Chris", "Edel", "Gerd", "Lars", "Lena", "Michael", "Peter", "René", "Stephan", "Tanja", "Werner"];
-                            exportNames(JSON.stringify(readResult));
+                            if(newName != "" && newName != null) readResult.push(newName);
+                            console.log("readResult vor write: "+readResult);
+                            writeNamesPersistently(fileEntry, readResult).then(function(){
+                                readResult.sort();
+                                readResult.push("NEUER NAME");
+                                createNameButtons(readResult);
+                            })
                         }
-                        readResult.sort();
-                    }
-                    readResult.push("NEUER NAME");
-                    console.log(readResult);
-                    $("#nameTbl").append("<tr>");
-                    $("#nameTbl").append('<td onclick="selName(this)">' + readResult[0] + '</td>');
-                    for (i = 1; i < readResult.length; i++) {
-                        if (i % 3 == 0) {
-                            $("#nameTbl").append("</tr>");
-                            $("#nameTbl").append("<tr>");
-                        }
-                        $("#nameTbl").append('<td onclick="selName(this)">' + readResult[i] + '</td>');
-                    }
-                    $("#nameTbl").append("</tr>");
+                    }    */               
                 };
                 reader.readAsText(file);
             }, errorCallback);
         }
     }, errorCallback);
 
-    function errorCallback(error) {
-        alert("ERROR: " + error.code)
+    function errorCallbackGet(error) {
+        alert("ERROR-GET: " + error.message)
     }
+
+    function errorCallback(error) {
+        alert("ERROR: " + error.message)
+    }
+    return;
 }
 
+function createNameButtons(names){
+    $("#nameTbl").append("<tr>");
+    $("#nameTbl").append('<td onclick="selName(this)">' + names[0] + '</td>');
+    for (i = 1; i < names.length; i++) {
+        if (i % 3 == 0) {
+            $("#nameTbl").append("</tr>");
+            $("#nameTbl").append("<tr>");
+        }
+        $("#nameTbl").append('<td onclick="selName(this)">' + names[i] + '</td>');
+    }
+    $("#nameTbl").append("</tr>");
+}
+
+async function writeNamesPersistently(fileEntry, names){
+    fileEntry.createWriter(function(fileWriter) {
+
+        fileWriter.onwriteend = function() {
+            console.log("Successful file write...");
+            //readFile(fileEntry);
+        };
+
+        fileWriter.onerror = function(e) {
+            console.log("Failed file write: " + e.toString());
+        };
+
+        fileWriter.write(JSON.stringify(names));  
+    })
+}
+
+/*
 function exportNames(dataObj) {
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
 
@@ -165,12 +211,14 @@ function exportNames(dataObj) {
         });
     }
 }
+*/
 
 var markedNameBtn = null;
 var playerBtn = null;
 var name = "";
 
 function nameIt(pBtn) {
+    importNames(null);
     if (markedNameBtn != null) {
         markedNameBtn.style.background = "orange";
     }
@@ -195,13 +243,14 @@ function selName(nBtn) {
 
 function closeName(ok) {
     var modal = document.getElementById("nameSelect");
-
-    var buttonID = Number(playerBtn.id);
-    var entered = name;
     if (ok) {
+        var buttonID = Number(playerBtn.id);
+        var entered = name;
+        var isNameNew = false;
         if (entered == "null") {
             var numtxt = buttonID + 1;
             entered = prompt("Bitte wähle einen Namen: ", "Spieler " + numtxt);
+            isNameNew = true;
         }
         if (entered == "") entered = null;
         if (entered != null) {
@@ -209,11 +258,15 @@ function closeName(ok) {
             namen[buttonID] = entered;
             playerBtn.innerHTML = entered;
             localStorage.setItem("namen", namen.toString())
+            if(entered.startsWith("Spieler") || entered.startsWith("spieler")){
+                isNameNew = false;
+            }
+            if(isNameNew) importNames(entered);
         }
     }
-    //markedNameBtn = null;
-    name = null;
     modal.style.display = "none";
+    $('#nameTbl').empty();
+    name = null;
 
 
 }

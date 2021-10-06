@@ -2,6 +2,9 @@ var markedWinners = 0; //Anzahl markierter Gewinner
 var markedDist = false; //Geber gesetzt ?
 var marking = [0, 0, 0, 0, 0, 0] //Speicher für Markierungen
 
+
+//TODO nur das Pflichtsolo jedes Spielers in Tabelle aufnehmen
+
 function running() {
     var running = localStorage.getItem("running");
     if (running == 1) {
@@ -163,18 +166,38 @@ function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Name
     document.getElementById("verTxt").innerHTML = verNamen;
     document.getElementById("PpointTxt").innerHTML = Pscore;
     document.getElementById("MpointTxt").innerHTML = Mscore;
+
+    if(wins == 1) disableImpossibleScores();
+
     modal.style.display = "block";
 }
 
-function resetButtonStyleScore(id) {
+function resetButtonStyleScore() {
+    if(wins == 1){
+        disableImpossibleScores();
+        return;
+    }
     for (i = 0; i < 20; i++) {
         document.getElementById("sc" + i).style.background = "orange";
+        document.getElementById("sc" + i).style.pointerEvents = 'auto';
     }
 }
 
 function setButtonStyleScore(id) {
     resetButtonStyleScore();
     if (id != -1) document.getElementById("sc" + id).style.background = "lightblue";
+}
+
+function disableImpossibleScores(){
+    for (i = 0; i < 20; i++) {
+        if(i % 3 == 0){
+            document.getElementById("sc" + i).style.background = "orange";
+            document.getElementById("sc" + i).style.pointerEvents = 'auto';
+        }else{
+            document.getElementById("sc" + i).style.background = "grey";
+            document.getElementById("sc" + i).style.pointerEvents = 'none';
+        }
+    }
 }
 
 var pScoreSave = 0;
@@ -202,7 +225,7 @@ function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angez
     pScoreSave = Pscore;
     mScoreSave = Mscore;
     document.getElementById("PpointTxt").innerHTML = Pscore;
-    document.getElementById("MpointTxt").innerHTML = Mscore.toFixed(2);
+    document.getElementById("MpointTxt").innerHTML = Mscore;//.toFixed(2);
     setButtonStyleScore(value);
 }
 
@@ -213,6 +236,7 @@ function closeScore(set) { //Schließt die Punkteauswahl und übernimmt die Punk
     var number = localStorage.getItem("playerNo");
     var gameTable = JSON.parse(localStorage.getItem("gameTable"));
     var soloTable = JSON.parse(localStorage.getItem("soloTable"));
+    var hatSolo = JSON.parse(localStorage.getItem("hatSolo"));
     var cntGewinner = 0;
     if (set) {
 
@@ -231,29 +255,42 @@ function closeScore(set) { //Schließt die Punkteauswahl und übernimmt die Punk
                 alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
             }
         }
+        
 
-
-        if (cntGewinner == 1) { //SOLO! 
-            for (i = 0; i < number; i++) {
-                if (marking[i] == 1) { //GEWINNER
-                    soloTable[i].push(Pscore);
-                } else if (marking[i] == 0) { //VERLIERER
-                    soloTable[i].push((-1) * Mscore);
-                } else if (marking[i] == 2) { //GEBER
-                    soloTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
-                } else {
-                    alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
+        if ( (cntGewinner == 1 || cntGewinner == 3) && hatSolo[number]==0) { //SOLO
+            var solo = (cntGewinner == 1) ? marking.indexOf(1) : marking.indexOf(0);
+            if(solo == -1){
+                alert("error while computing solo!");
+                return;
+            }
+            if(hatSolo[solo] == 0){
+                hatSolo[solo] = 1;
+                for (i = 0; i < number; i++) {
+                    if (marking[i] == 1) { //GEWINNER
+                        soloTable[i].push(Pscore);
+                    } else if (marking[i] == 0) { //VERLIERER
+                        soloTable[i].push((-1) * Mscore);
+                    } else if (marking[i] == 2) { //GEBER
+                        soloTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
+                    } else {
+                        alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
+                    }
                 }
             }
+
             gameTable[number].push(Pscore + "S");
             soloTable[number].push(localStorage.getItem("round"));
-        } else {
+        } 
+        /*else if(cntGewinner == 3){ //SOLO VERLOREN!
+
+        }*/else {
             gameTable[number].push(Pscore);
         }
 
         localStorage.setItem("punkte", punkte.toString())
         localStorage.setItem("gameTable", JSON.stringify(gameTable));
         localStorage.setItem("soloTable", JSON.stringify(soloTable));
+        localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
         nextRound();
     }
 
@@ -274,6 +311,7 @@ function nextRound() {
     document.getElementById("scr").disabled = true;
     emptyTable();
     showResult();
+    wins = 0;
     return;
 }
 
