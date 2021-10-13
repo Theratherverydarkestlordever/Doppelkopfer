@@ -82,9 +82,8 @@ button {
 }
 
 #clickTbl td,
-/*#nameSelect td,
-.modal-content>table>tr>td,*/
-#nameTbl td {
+#nameSelect td,
+.modal-content>table>tr>td {
     width: 20%;
     padding: 10px;
     margin: 10px, 10px, 10px, 10px !important;

@@ -145,11 +145,38 @@ var Pscore = 0;
 var Mscore = 0;
 var wins = 0;
 
+function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angezeigte Zahl und die Variable
+    var number = Number(localStorage.getItem("playerNo"));
+    var geber = (number == 5) ? 1 : 0;
+    if (wins == 1) { //SOLO gewonnen
+        Pscore = value;
+        Mscore = value / (number - wins - geber);
+    } else if (wins == (number - geber - 1)) { //&& (number == 4 || number == 5)) { //SOLO verloren bei 4 oder 5 Spielern
+        Pscore = value;
+        Mscore = value * wins;
+    } else {
+        Pscore = value;
+        Mscore = value * wins / (number - wins - geber);
+    }
+    if (Pscore * wins - Mscore * (number - wins - geber) != 0) alert("PUNKTEFEHLER");
+    if (Pscore == pScoreSave) {
+        Pscore = 0;
+        Mscore = 0;
+        value = -1;
+    }
+    pScoreSave = Pscore;
+    mScoreSave = Mscore;
+    document.getElementById("PpointTxt").innerHTML = Pscore;
+    document.getElementById("MpointTxt").innerHTML = Mscore;//.toFixed(2);
+    setButtonStyleScore(value);
+    scoring();
+}
+
 function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Namen veranwtortlich
     var allowedWinners = localStorage.getItem("allowedWinners");
     var allowedDist = localStorage.getItem("allowdDist");
     var number = localStorage.getItem("playerNo");
-    var modal = document.getElementById("scoreSelect");
+    //var modal = document.getElementById("scoreSelect");
     var gewNamen = "";
     var verNamen = "";
     var namen = localStorage.getItem("namen").split(",");
@@ -167,16 +194,17 @@ function scoring() { //Ist für das Öffnen der Punkteauswahl mit richtigen Name
     document.getElementById("PpointTxt").innerHTML = Pscore;
     document.getElementById("MpointTxt").innerHTML = Mscore;
 
-    if(wins == 1) disableImpossibleScores();
+    //if(wins == 1) disableImpossibleScores();
 
-    modal.style.display = "block";
 }
 
 function resetButtonStyleScore() {
+    /*
     if(wins == 1){
         disableImpossibleScores();
         return;
     }
+    */
     for (i = 0; i < 20; i++) {
         document.getElementById("sc" + i).style.background = "orange";
         document.getElementById("sc" + i).style.pointerEvents = 'auto';
@@ -202,32 +230,6 @@ function disableImpossibleScores(){
 
 var pScoreSave = 0;
 var mScoreSave = 0;
-
-function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angezeigte Zahl und die Variable
-    var number = Number(localStorage.getItem("playerNo"));
-    var geber = (number == 5) ? 1 : 0;
-    if (wins == 1) { //SOLO gewonnen
-        Pscore = value;
-        Mscore = value / (number - wins - geber);
-    } else if (wins == (number - geber - 1)) { //&& (number == 4 || number == 5)) { //SOLO verloren bei 4 oder 5 Spielern
-        Pscore = value;
-        Mscore = value * wins;
-    } else {
-        Pscore = value;
-        Mscore = value * wins / (number - wins - geber);
-    }
-    if (Pscore * wins - Mscore * (number - wins - geber) != 0) alert("PUNKTEFEHLER");
-    if (Pscore == pScoreSave) {
-        Pscore = 0;
-        Mscore = 0;
-        value = -1;
-    }
-    pScoreSave = Pscore;
-    mScoreSave = Mscore;
-    document.getElementById("PpointTxt").innerHTML = Pscore;
-    document.getElementById("MpointTxt").innerHTML = Mscore;//.toFixed(2);
-    setButtonStyleScore(value);
-}
 
 
 function closeScore(set) { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false

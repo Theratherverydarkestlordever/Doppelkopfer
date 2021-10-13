@@ -23,49 +23,9 @@
     <div class="hw Box player" id="3" onclick="mark(this)">Spieler 4</div>
     <div class="hw Box player" id="4" onclick="mark(this)">Spieler 5</div>
     <div class="hw Box player" id="5" onclick="mark(this)">Spieler 6</div>
+    <button onclick="scoring()" id="scr" id="scr">Punktevergabe</button>
+    <button onclick="endGame()" id="end">Spiel beenden</button>
 
-    <table id="clickTbl" style="width:100%">
-        <tr>
-            <td id="sc0" onclick="setScore(0)" disabled="true">0</td>
-            <td id="sc1" onclick="setScore(1)" disabled="true">1</td>
-            <td id="sc2" onclick="setScore(2)" disabled="true">2</td>
-            <td id="sc3" onclick="setScore(3)" disabled="true">3</td>
-
-        </tr>
-        <tr>
-            <td id="sc4" onclick="setScore(4)" disabled="true">4</td>
-            <td id="sc5" onclick="setScore(5)" disabled="true">5</td>
-            <td id="sc6" onclick="setScore(6)" disabled="true">6</td>
-            <td id="sc7" onclick="setScore(7)" disabled="true">7</td>
-
-        </tr>
-        <tr>
-            <td id="sc8" onclick="setScore(8)" disabled="true">8</td>
-            <td id="sc9" onclick="setScore(9)" disabled="true">9</td>
-            <td id="sc10" onclick="setScore(10)" disabled="true">10</td>
-            <td id="sc11" onclick="setScore(11)" disabled="true">11</td>
-
-        </tr>
-        <tr>
-            <td id="sc12" onclick="setScore(12)" disabled="true">12</td>
-            <td id="sc13" onclick="setScore(13)" disabled="true">13</td>
-            <td id="sc14" onclick="setScore(14)" disabled="true">14</td>
-            <td id="sc15" onclick="setScore(15)" disabled="true">15</td>
-
-        </tr>
-        <tr>
-            <td id="sc16" onclick="setScore(16)" disabled="true">16</td>
-            <td id="sc17" onclick="setScore(17)" disabled="true">17</td>
-            <td id="sc18" onclick="setScore(18)" disabled="true">18</td>
-            <td id="sc19" onclick="setScore(19)" disabled="true">19</td>
-        </tr>
-
-        <p><b> + <span id="PpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="winTxt"></span></b></p>
-        <p><b> - <span id="MpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="verTxt"></span></b></p>
-        <button onclick="closeScore()" id="scr" id="scr">Punkte vergeben</button>
-        <button onclick="endGame()" id="end">Spiel beenden</button>
-
-    </table>
 
     <!-- Punkteauswahlfenster -->
     <div id="scoreSelect" class="modal">
@@ -77,13 +37,48 @@
             <span class="close" id="ok" onclick="closeScore(true)">Punkte setzen</span>
             -->
             <p>Bitte wähle die Punkte für die Gewinner:</p>
+            <p><b> + <span id="PpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="winTxt"></span></b></p>
+            <p><b> - <span id="MpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="verTxt"></span></b></p>
+            <table id="clickTbl" style="width:100%">
+                <tr>
+                    <td id="sc0" onclick="setScore(0)">0</td>
+                    <td id="sc1" onclick="setScore(1)">1</td>
+                    <td id="sc2" onclick="setScore(2)">2</td>
+                    <td id="sc3" onclick="setScore(3)">3</td>
 
-            <!--
-            <tr>
-                <button id="abort" onclick="closeScore(false)">Abbruch</button>
-                <button id="ok" onclick="closeScore(true)">Punkte setzen und nächstes Spiel starten</button>
-            </tr>
--->
+                </tr>
+                <tr>
+                    <td id="sc4" onclick="setScore(4)">4</td>
+                    <td id="sc5" onclick="setScore(5)">5</td>
+                    <td id="sc6" onclick="setScore(6)">6</td>
+                    <td id="sc7" onclick="setScore(7)">7</td>
+
+                </tr>
+                <tr>
+                    <td id="sc8" onclick="setScore(8)">8</td>
+                    <td id="sc9" onclick="setScore(9)">9</td>
+                    <td id="sc10" onclick="setScore(10)">10</td>
+                    <td id="sc11" onclick="setScore(11)">11</td>
+
+                </tr>
+                <tr>
+                    <td id="sc12" onclick="setScore(12)">12</td>
+                    <td id="sc13" onclick="setScore(13)">13</td>
+                    <td id="sc14" onclick="setScore(14)">14</td>
+                    <td id="sc15" onclick="setScore(15)">15</td>
+
+                </tr>
+                <tr>
+                    <td id="sc16" onclick="setScore(16)">16</td>
+                    <td id="sc17" onclick="setScore(17)">17</td>
+                    <td id="sc18" onclick="setScore(18)">18</td>
+                    <td id="sc19" onclick="setScore(19)">19</td>
+                </tr>
+                <tr>
+                    <button id="abort" onclick="closeScore(false)">Abbruch</button>
+                    <button id="ok" onclick="closeScore(true)">Punkte setzen und nächstes Spiel starten</button>
+                </tr>
+            </table>
 
         </div>
 
