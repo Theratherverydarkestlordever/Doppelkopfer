@@ -87,6 +87,13 @@ function selName(nBtn) {
         var entered = prompt("Bitte wähle einen Namen: ", "");
         if (entered == "" || entered == null) return;
         addNameBtn(entered);
+        /*
+        for( i=0;i<markedNameBtn.length;i++) {
+            styleSelectedBtn(markedNameBtn[i]);
+        }
+        */
+       names = [];
+       markedNameBtn = [];
         return;
     }
 
