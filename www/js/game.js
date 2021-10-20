@@ -19,7 +19,6 @@ function running() {
 function endGame() {
     var round = localStorage.getItem("round") - 1;
     var players = localStorage.getItem("playerNo");
-    console.log(Math.round(round / players) * players + "==" + round);
     if (Math.round(round / players) * players == round) {
         document.getElementById("warning").style.display = "none";
     }
@@ -31,7 +30,7 @@ function quit(arg) {
     document.getElementById("quit").style.display = "none";
     if (arg) {
         var boxes = document.getElementsByClassName("Box");
-        for (i = 0; i < 6; i++) document.getElementById(i).style.display = "none";
+        for (var i = 0; i < 6; i++) document.getElementById(i).style.display = "none";
         document.getElementById("scr").style.display = "none";
         document.getElementById("end").style.display = "none";
         document.getElementById("tutorialText").style.display = "none";
@@ -135,11 +134,10 @@ function updateButtonStylePlayer(buttonID, state) { //aktualisiert Farbe und Tex
     }
     button.style.background = color;
     button.innerHTML = namen + " \n " + text;
-    console.log("set style for "+namen+" as "+text);
-    if(wins != 0){
-        setScore(-1);
-        var x = 0;
-    }
+    //if (wins != 0) {
+    setScore(-1);
+    wins = 0;
+    //}
     return;
 }
 
@@ -148,8 +146,7 @@ function resetMarking() { //Setzt Markierungen zurück
     marking = [0, 0, 0, 0, 0, 0];
     markedWinners = 0;
     markedDist = false;
-    for (i = 0; i < 6; i++){
-        console.log("trying to set style "+i);
+    for (var i = 0; i < 6; i++) {
         updateButtonStylePlayer(i, 0);
     }
     return;
@@ -172,7 +169,7 @@ function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angez
     var number = Number(localStorage.getItem("playerNo"));
     var geber = (number == 5) ? 1 : 0;
 
-    for (i = 0; i < number; i++) { //alle Spieler auf Status 1 werden als Gewinner herausgesucht
+    for (var i = 0; i < number; i++) { //alle Spieler auf Status 1 werden als Gewinner herausgesucht
         if (marking[i] == 1) {
             gewNamen = gewNamen + " " + namen[i];
             wins++;
@@ -197,8 +194,6 @@ function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angez
         Mscore = 0;
         value = -1;
     }
-    console.log("Pscore: " + Pscore);
-    console.log("Mscore: " + Mscore);
     pScoreSave = Pscore;
     mScoreSave = Mscore;
 
@@ -228,7 +223,7 @@ function resetButtonStyleScore() {
         return;
     }
     */
-    for (i = 0; i < 20; i++) {
+    for (var i = 0; i < 20; i++) {
         document.getElementById("sc" + i).style.background = "orange";
         document.getElementById("sc" + i).style.pointerEvents = 'auto';
     }
@@ -245,26 +240,25 @@ var pScoreSave = 0;
 var mScoreSave = 0;
 
 
-function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte bei true, verwirft sie bei false
+function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
+
+    if (Pscore <= 0) return;
+
     var modal = document.getElementById("scoreSelect");
     var punkte = localStorage.getItem("punkte").split(",");
     var number = localStorage.getItem("playerNo");
     var gameTable = JSON.parse(localStorage.getItem("gameTable"));
     var soloTable = JSON.parse(localStorage.getItem("soloTable"));
     var hatSolo = JSON.parse(localStorage.getItem("hatSolo"));
+    var verlauf = JSON.parse(localStorage.getItem("verlauf"));
     var cntGewinner = 0;
 
-    for (i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
+    for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
         if (marking[i] == 1) { //GEWINNER
             punkte[i] = parseInt(punkte[i]) + Pscore;
-            //gameTable[i].push(punkte[i]);
             cntGewinner++;
         } else if (marking[i] == 0) { //VERLIERER
             punkte[i] = parseInt(punkte[i]) - Mscore;
-            //gameTable[i].push(punkte[i]);
-
-        } else if (marking[i] == 2) { //GEBER
-            //gameTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
         } else {
             alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
         }
@@ -272,6 +266,7 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte 
 
 
     if ((cntGewinner == 1 || cntGewinner == 3) && hatSolo[number] == 0) { //SOLO
+        console.log("SoloTable füllen");
         var solo = (cntGewinner == 1) ? marking.indexOf(1) : marking.indexOf(0);
         if (solo == -1) {
             alert("error while computing solo!");
@@ -279,47 +274,74 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte 
         }
         if (hatSolo[solo] == 0) {
             hatSolo[solo] = 1;
-            for (i = 0; i < number; i++) {
+            for (var i = 0; i < number; i++) {
                 if (marking[i] == 1) { //GEWINNER
                     soloTable[i].push(Pscore);
+                    verlauf[i].push(Pscore);
                 } else if (marking[i] == 0) { //VERLIERER
                     soloTable[i].push((-1) * Mscore);
+                    verlauf[i].push((-1) * Mscore);
                 } else if (marking[i] == 2) { //GEBER
                     soloTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
+                    verlauf[i].push(0);
                 } else {
                     alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
                 }
             }
+            verlauf[number].push('s');
             soloTable[number].push(localStorage.getItem("round"));
+        } else {
+            console.log("Doch GameTable füllen");
+            for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
+                if (marking[i] == 1) { //GEWINNER
+                    gameTable[i].push(punkte[i]);
+                    verlauf[i].push(Pscore);
+                } else if (marking[i] == 0) { //VERLIERER
+                    gameTable[i].push(punkte[i]);
+                    verlauf[i].push((-1) * Mscore);
+                } else if (marking[i] == 2) { //GEBER
+                    gameTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
+                    verlauf[i].push(0);
+                } else {
+                    alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
+                }
+            }
+            verlauf[number].push('g');
+            gameTable[number].push(Pscore);
         }
 
     } else {
-
-        for (i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
+        console.log("GameTable füllen");
+        for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
             if (marking[i] == 1) { //GEWINNER
                 gameTable[i].push(punkte[i]);
+                verlauf[i].push(Pscore);
             } else if (marking[i] == 0) { //VERLIERER
                 gameTable[i].push(punkte[i]);
+                verlauf[i].push((-1) * Mscore);
             } else if (marking[i] == 2) { //GEBER
                 gameTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
+                verlauf[i].push(0);
             } else {
                 alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
             }
         }
+        verlauf[number].push('g');
         gameTable[number].push(Pscore);
     }
 
+    console.log("Verlauf: " + verlauf);
     localStorage.setItem("punkte", punkte.toString())
     localStorage.setItem("gameTable", JSON.stringify(gameTable));
     localStorage.setItem("soloTable", JSON.stringify(soloTable));
     localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
-    nextRound();
-
+    localStorage.setItem("verlauf", JSON.stringify(verlauf));
 
     Pscore = 0;
     Mscore = 0;
     wins = 0;
-    resetButtonStyleScore();
+
+    nextRound();
     return;
 }
 
@@ -327,11 +349,103 @@ styled = false;
 
 function nextRound() {
     resetMarking();
+    resetButtonStyleScore();
     var round = localStorage.getItem("round");
     document.getElementById("round").innerHTML = "Spiel " + ++round;
     localStorage.setItem("round", round);
     document.getElementById("scr").disabled = true;
     emptyTable();
+    showResult();
+    setScore(-1);
+    wins = 0;
+    return;
+}
+
+function undo() {
+    resetMarking();
+    resetButtonStyleScore();
+    var round = localStorage.getItem("round");
+    var number = Number(localStorage.getItem("playerNo"));
+
+    if (round <= 1) {
+        localStorage.setItem("round", "1");
+        punkte = [0, 0, 0, 0, 0, 0];
+        localStorage.setItem("punkte", punkte.toString());
+        gameTable = [
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ]; //jeweils 5 Felder für das laufend aktualisierte Ergebnis und ein Feld für die absoluten Punkte in dieser Runde
+        soloTable = [
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ];
+        hatSolo = [0, 0, 0, 0, 0]; //Markierung für das Pflichtsolo
+        verlauf = [
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ]; // 5 Felder für das absolute Ergebnis pro Spieler pro Runde und ein Feld für Tabelle, in die eingetragen wurde // s = Solo, g = Game
+        localStorage.setItem("gameTable", JSON.stringify(gameTable));
+        localStorage.setItem("soloTable", JSON.stringify(soloTable));
+        localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
+        localStorage.setItem("verlauf", JSON.stringify(verlauf));
+
+        emptyTable();
+        setScore(-1);
+        return;
+    }
+
+    document.getElementById("round").innerHTML = "Spiel " + --round;
+    localStorage.setItem("round", round);
+    document.getElementById("scr").disabled = true;
+    emptyTable();
+    var punkte = localStorage.getItem("punkte").split(",");
+    var gameTable = JSON.parse(localStorage.getItem("gameTable"));
+    var soloTable = JSON.parse(localStorage.getItem("soloTable"));
+    var verlauf = JSON.parse(localStorage.getItem("verlauf"));
+
+    var type = verlauf[number][verlauf[number].length - 1];
+    console.log("Verlauf " + verlauf);
+    console.log("Type " + type);
+
+    if (type == 's') {
+        console.log("removing solo");
+        for (var i = 0; i < soloTable.length; i++) {
+            soloTable[i].pop();
+            verlauf[i].pop();
+        }
+        localStorage.setItem("soloTable", JSON.stringify(soloTable));
+    } else {
+        console.log("removing game");
+        for (var i = 0; i < gameTable.length; i++) {
+            gameTable[i].pop();
+            verlauf[i].pop();
+        }
+        localStorage.setItem("gameTable", JSON.stringify(gameTable));
+    }
+
+    if(verlauf[0].length > 0){
+        for (var i = 0; i < number; i++) {
+            punkte[i] = verlauf[i][verlauf[i].length-1];
+        }
+    }
+    else{
+        punkte = [0,0,0,0,0,0];
+    }
+    
+    localStorage.setItem("punkte", punkte.toString())
+    localStorage.setItem("verlauf", JSON.stringify(verlauf));
     showResult();
     setScore(-1);
     wins = 0;
@@ -351,7 +465,7 @@ function showResult() {
     var row = "<thead>\n<tr>";
     row += "\n<th scope='col'>Nr.</th>";
     row += "\n<th scope='col'>P</th>";
-    for (i = 0; i < number; i++) {
+    for (var i = 0; i < number; i++) {
         row += "\n<th scope='col'>" + namen[i] + "</th>";
     }
     row += "\n</thead>\n</tr>";
@@ -359,12 +473,12 @@ function showResult() {
 
     $("#queryTableGames").append("<tbody>");
 
-    for (j = 0; j < round; j++) {
+    for (var j = 0; j < gameTable[0].length; j++) {
         row = "<tr>";
         row += "<th scope='row'>" + (j + 1) + "</th>";
         row += "<td>" + gameTable[number][j] + "</td>";
 
-        for (i = 0; i < number; i++) {
+        for (var i = 0; i < number; i++) {
             var val = gameTable[i][j];
             if (val == null) val = "";
             row += "\n<td>" + val + "</td>";
@@ -380,19 +494,19 @@ function showResult() {
         row = "<thead>\n<tr>";
         row += "\n<th scope='col'>Nr.</th>";
         row += "\n<th scope='col'>R</th>";
-        for (i = 0; i < number; i++) {
+        for (var i = 0; i < number; i++) {
             row += "\n<th scope='col'>" + namen[i] + "</th>";
         }
         row += "\n</thead>\n</tr>";
         $("#queryTableSolo").append(row);
 
         $("#queryTableSolo").append("<tbody>");
-        for (j = 0; j < soloTable[0].length; j++) {
+        for (var j = 0; j < soloTable[0].length; j++) {
             row = "<tr>";
             row += "<th scope='row'>S" + (j + 1) + "</th>";
             row += "<td>" + soloTable[number][j] + "</td>";
 
-            for (i = 0; i < number; i++) {
+            for (var i = 0; i < number; i++) {
                 var val = soloTable[i][j];
                 if (val == null) val = "";
                 row += "\n<td>" + val + "</td>";
@@ -405,7 +519,7 @@ function showResult() {
 
     //ERGEBNIS
     row = "<thead>\n<tr>";
-    for (i = 0; i < number; i++) {
+    for (var i = 0; i < number; i++) {
         row += "\n<th scope='col'>" + namen[i] + "</th>";
     }
     row += "\n</thead>\n</tr>";
@@ -414,7 +528,7 @@ function showResult() {
     $("#queryTableResult").append("<tbody>");
 
     row = "<tr>";
-    for (i = 0; i < number; i++) {
+    for (var i = 0; i < number; i++) {
         row += "\n<th>" + punkte[i] + "</th>";
     }
     row += "</tr>";

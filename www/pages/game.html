@@ -62,32 +62,14 @@
 
         <p><b> + <span id="PpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="winTxt"></span></b></p>
         <p><b> - <span id="MpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="verTxt"></span></b></p>
-        <button onclick="closeScore()" id="scr" id="scr">Punkte vergeben</button>
-        <button onclick="endGame()" id="end">Spiel beenden</button>
 
     </table>
 
-    <!-- Punkteauswahlfenster -->
-    <div id="scoreSelect" class="modal">
+    <button onclick="closeScore()" id="scr" id="scr">Punkte vergeben</button>
+    <button onclick="endGame()" id="end">Spiel beenden</button>
+    <button onclick="undo()" id="undo">Letzten Eintrag löschen</button>
 
-        <!-- Modal content -->
-        <div class="modal-content">
-            <!--
-            <span class="close" id="abort" onclick="closeScore(false)">Abbrechen</span> <br><br>
-            <span class="close" id="ok" onclick="closeScore(true)">Punkte setzen</span>
-            -->
-            <p>Bitte wähle die Punkte für die Gewinner:</p>
-
-            <!--
-            <tr>
-                <button id="abort" onclick="closeScore(false)">Abbruch</button>
-                <button id="ok" onclick="closeScore(true)">Punkte setzen und nächstes Spiel starten</button>
-            </tr>
--->
-
-        </div>
-
-    </div>
+    
 
 
     <table id="queryTableGames" class="table table-striped table-bordered table-sm">

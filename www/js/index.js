@@ -25,9 +25,18 @@ function startNewGame(number) {
         []
     ];
     hatSolo = [0,0,0,0,0]; //Markierung für das Pflichtsolo
+    verlauf = [
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+    ]; // 5 Felder für das absolute Ergebnis pro Spieler pro Runde und ein Feld für Tabelle, in die eingetragen wurde // s = Solo, g = Game
     localStorage.setItem("gameTable", JSON.stringify(gameTable));
     localStorage.setItem("soloTable", JSON.stringify(soloTable));
     localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
+    localStorage.setItem("verlauf", JSON.stringify(verlauf));
     window.location.assign("name.html");
 }
 
