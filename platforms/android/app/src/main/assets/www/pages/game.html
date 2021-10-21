@@ -60,16 +60,15 @@
             <td id="sc19" onclick="setScore(19)" disabled="true">19</td>
         </tr>
 
-        <p><b> + <span id="PpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="winTxt"></span></b></p>
-        <p><b> - <span id="MpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="verTxt"></span></b></p>
+        <p id="pointTxt1"><b> + <span id="PpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="winTxt"></span></b></p>
+        <p id="pointTxt2"><b> - <span id="MpointTxt">0</span></b> Punkte f&uuml;r: <b><span id="verTxt"></span></b></p>
 
     </table>
 
     <button onclick="closeScore()" id="scr" id="scr">Punkte vergeben</button>
     <button onclick="endGame()" id="end">Spiel beenden</button>
     <button onclick="undo()" id="undo">Letzten Eintrag löschen</button>
-
-    
+   
 
 
     <table id="queryTableGames" class="table table-striped table-bordered table-sm">
@@ -100,6 +99,7 @@
 
 
     <script type="text/javascript" src="../js/game.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
 </body>
 
 </html>

@@ -33,10 +33,15 @@ function quit(arg) {
         for (var i = 0; i < 6; i++) document.getElementById(i).style.display = "none";
         document.getElementById("scr").style.display = "none";
         document.getElementById("end").style.display = "none";
+        document.getElementById("undo").style.display = "none";
+        document.getElementById("clickTbl").style.display = "none";
         document.getElementById("tutorialText").style.display = "none";
         document.getElementById("tutorialText2").style.display = "none";
+        document.getElementById("pointTxt1").style.display = "none";
+        document.getElementById("pointTxt2").style.display = "none";
         var string = "Ergebnis nach " + (localStorage.getItem("round") - 1) + " Spielen";
         document.getElementById("round").innerHTML = string;
+        $("body").append('<a class="fw Box" onclick="createCSV()">CSV erstellen</a>');
         $("body").append('<a class="fw Box" href="../index.html">Hauptmenü</a>');
         localStorage.setItem("running", 0);
     }
@@ -367,8 +372,9 @@ function undo() {
     var round = localStorage.getItem("round");
     var number = Number(localStorage.getItem("playerNo"));
 
-    if (round <= 1) {
+    if (round <= 2) {
         localStorage.setItem("round", "1");
+        document.getElementById("round").innerHTML = "Spiel 1"
         punkte = [0, 0, 0, 0, 0, 0];
         localStorage.setItem("punkte", punkte.toString());
         gameTable = [
@@ -411,39 +417,51 @@ function undo() {
     document.getElementById("scr").disabled = true;
     emptyTable();
     var punkte = localStorage.getItem("punkte").split(",");
-    var gameTable = JSON.parse(localStorage.getItem("gameTable"));
-    var soloTable = JSON.parse(localStorage.getItem("soloTable"));
     var verlauf = JSON.parse(localStorage.getItem("verlauf"));
-
     var type = verlauf[number][verlauf[number].length - 1];
     console.log("Verlauf " + verlauf);
     console.log("Type " + type);
 
     if (type == 's') {
         console.log("removing solo");
+        var hatSolo = JSON.parse(localStorage.getItem("hatSolo"));
+        var soloTable = JSON.parse(localStorage.getItem("soloTable"));
+        var maxIdx = 0;
+        var maxVal = 0;
         for (var i = 0; i < soloTable.length; i++) {
-            soloTable[i].pop();
-            verlauf[i].pop();
+            var curVal = Math.abs(soloTable[i].pop());
+            if (curVal > maxVal) {
+                maxVal = curVal;
+                maxIdx = i;
+            }
+            punkte[i] -= verlauf[i].pop();
         }
+        hatSolo[maxIdx] = 0;
         localStorage.setItem("soloTable", JSON.stringify(soloTable));
+        localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
     } else {
         console.log("removing game");
+        var gameTable = JSON.parse(localStorage.getItem("gameTable"));
         for (var i = 0; i < gameTable.length; i++) {
             gameTable[i].pop();
-            verlauf[i].pop();
+            punkte[i] -= verlauf[i].pop();
         }
         localStorage.setItem("gameTable", JSON.stringify(gameTable));
     }
 
-    if(verlauf[0].length > 0){
+    /*
+    if (verlauf[0].length > 0) {
         for (var i = 0; i < number; i++) {
-            punkte[i] = verlauf[i][verlauf[i].length-1];
+            punkte[i] = gameTable[i][gameTable[i].length - 1];
+            for (var j = 0; j < soloTable[0].length; j++) {
+                punkte[i] += soloTable[i][j]
+            }
         }
     }
-    else{
-        punkte = [0,0,0,0,0,0];
-    }
-    
+    else {
+        punkte = [0, 0, 0, 0, 0, 0];
+    }*/
+
     localStorage.setItem("punkte", punkte.toString())
     localStorage.setItem("verlauf", JSON.stringify(verlauf));
     showResult();
@@ -545,5 +563,116 @@ function emptyTable() {
     $("#queryTableGames").empty();
     $("#queryTableSolo").empty();
     $("#queryTableResult").empty();
+    return;
+}
+
+function createCSV() {
+
+    var permissions = cordova.plugins.permissions;
+    permissions.checkPermission(permissions.READ_EXTERNAL_STORAGE, checkPermissionCallback, null);
+
+}
+
+
+
+// Checking for permissions
+function checkPermissionCallback(status) {
+    console.log('checking permissions')
+    console.log(status)
+    if (!status.hasPermission) {
+        var errorCallback = function () {
+            console.warn('Storage permission is not turned on')
+        }
+        // Asking permission to the user
+        permissions.requestPermission(
+            permissions.READ_EXTERNAL_STORAGE,
+            function (status) {
+                if (!status.hasPermission) {
+                    errorCallback()
+                } else {
+                    // proceed with downloading
+                    downloadFile()
+                }
+            },
+            errorCallback)
+    } else {
+        downloadFile()
+    }
+}
+
+function downloadFile() {
+    var namen = localStorage.getItem("namen").split(",");
+    var punkte = localStorage.getItem("punkte").split(",");
+    var number = Number(localStorage.getItem("playerNo"));
+    var gameTable = JSON.parse(localStorage.getItem("gameTable"));
+    var soloTable = JSON.parse(localStorage.getItem("soloTable"));
+    var round = localStorage.getItem("round") - 1;
+
+    var result = "";
+
+    result += namen[0];
+    for (var i = 1; i < number; i++) {
+        result += ";" + namen[i];
+    }
+    result += '\n';
+
+    for (var i = 0; i < gameTable[0].length; i++) {
+        result += gameTable[i][0];
+        for (var j = 1; j < number; j++) {
+            result += ";" + gameTable[i][j];
+        }
+        result += '\n';
+    }
+    result += '\n';
+
+    for (var i = 0; i < soloTable[0].length; i++) {
+        result += soloTable[i][0];
+        for (var j = 1; j < number; j++) {
+            result += ";" + soloTable[i][j];
+        }
+        result += '\n';
+    }
+    result += '\n';
+
+    result += punkte[0];
+    for (var i = 1; i < number; i++) {
+        result += ";" + punkte[i];
+    }
+
+    const d = new Date();
+
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function successCallback(fs) {
+        fs.root.getFile('file:///storage/emulated/0/Download/doppelkopfErgebnis' + d.getTime() + ".csv", { create: true, exclusive: false }, successCallbackGet, errorCallbackGet);
+
+        function successCallbackGet(fileEntry) {
+            fileEntry.file(function (file) {
+
+
+                fileEntry.createWriter(function (fileWriter) {
+
+                    fileWriter.onwriteend = function () {
+                        console.log("Successful file write...");
+                    };
+
+                    fileWriter.onerror = function (e) {
+                        console.log("Failed file write: " + e.toString());
+                    };
+
+                    console.log("vor write");
+                    fileWriter.write(result);
+                    console.log("nach write");
+                })
+
+            }, errorCallback);
+        }
+    }, errorCallback);
+
+    function errorCallbackGet(error) {
+        alert("ERROR-CSV-GET: " + error.message)
+    }
+
+    function errorCallback(error) {
+        alert("ERROR-CSV: " + error.message)
+    }
     return;
 }
