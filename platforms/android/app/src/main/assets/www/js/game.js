@@ -264,14 +264,17 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
             cntGewinner++;
         } else if (marking[i] == 0) { //VERLIERER
             punkte[i] = parseInt(punkte[i]) - Mscore;
-        } else {
+        } else if(marking[i] == 2){ //GEBER
+            //DO Nothing
+        }
+        else {
             alert("Fehler bei der Punktvergabe: Ungültiger Statuswert!");
         }
     }
 
 
-    if ((cntGewinner == 1 || cntGewinner == 3) && hatSolo[number] == 0) { //SOLO
-        console.log("SoloTable füllen");
+    if ((cntGewinner == 1 || cntGewinner == 3)){//} && hatSolo[number] == 0) { //SOLO
+        //console.log("SoloTable füllen");
         var solo = (cntGewinner == 1) ? marking.indexOf(1) : marking.indexOf(0);
         if (solo == -1) {
             alert("error while computing solo!");
@@ -296,7 +299,7 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
             verlauf[number].push('s');
             soloTable[number].push(localStorage.getItem("round"));
         } else {
-            console.log("Doch GameTable füllen");
+            //console.log("Doch GameTable füllen");
             for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
                 if (marking[i] == 1) { //GEWINNER
                     gameTable[i].push(punkte[i]);
@@ -312,11 +315,11 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
                 }
             }
             verlauf[number].push('g');
-            gameTable[number].push(Pscore);
+            gameTable[number].push(Pscore + "S");
         }
 
     } else {
-        console.log("GameTable füllen");
+        //console.log("GameTable füllen");
         for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
             if (marking[i] == 1) { //GEWINNER
                 gameTable[i].push(punkte[i]);
@@ -335,7 +338,7 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
         gameTable[number].push(Pscore);
     }
 
-    console.log("Verlauf: " + verlauf);
+    //console.log("Verlauf: " + verlauf);
     localStorage.setItem("punkte", punkte.toString())
     localStorage.setItem("gameTable", JSON.stringify(gameTable));
     localStorage.setItem("soloTable", JSON.stringify(soloTable));
@@ -407,6 +410,8 @@ function undo() {
         localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
         localStorage.setItem("verlauf", JSON.stringify(verlauf));
 
+        document.getElementById("undo").disabled = true;
+
         emptyTable();
         setScore(-1);
         return;
@@ -419,11 +424,11 @@ function undo() {
     var punkte = localStorage.getItem("punkte").split(",");
     var verlauf = JSON.parse(localStorage.getItem("verlauf"));
     var type = verlauf[number][verlauf[number].length - 1];
-    console.log("Verlauf " + verlauf);
-    console.log("Type " + type);
+    //console.log("Verlauf " + verlauf);
+    //console.log("Type " + type);
 
     if (type == 's') {
-        console.log("removing solo");
+        //console.log("removing solo");
         var hatSolo = JSON.parse(localStorage.getItem("hatSolo"));
         var soloTable = JSON.parse(localStorage.getItem("soloTable"));
         var maxIdx = 0;
@@ -440,7 +445,7 @@ function undo() {
         localStorage.setItem("soloTable", JSON.stringify(soloTable));
         localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
     } else {
-        console.log("removing game");
+        //console.log("removing game");
         var gameTable = JSON.parse(localStorage.getItem("gameTable"));
         for (var i = 0; i < gameTable.length; i++) {
             gameTable[i].pop();
@@ -554,6 +559,8 @@ function showResult() {
 
     $("#queryTableResult").append("</tbody>");
 
+    document.getElementById("undo").disabled = false;
+
     return;
 }
 
@@ -578,7 +585,7 @@ function createCSV() {
 // Checking for permissions
 function checkPermissionCallback(status) {
     console.log('checking permissions')
-    console.log(status)
+    //console.log(status)
     if (!status.hasPermission) {
         var errorCallback = function () {
             console.warn('Storage permission is not turned on')
@@ -607,6 +614,8 @@ function downloadFile() {
     var gameTable = JSON.parse(localStorage.getItem("gameTable"));
     var soloTable = JSON.parse(localStorage.getItem("soloTable"));
     var round = localStorage.getItem("round") - 1;
+
+    console.log("trying downloading...");
 
     var result = "";
 
@@ -641,34 +650,53 @@ function downloadFile() {
 
     const d = new Date();
 
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function successCallback(fs) {
-        fs.root.getFile('file:///storage/emulated/0/Download/doppelkopfErgebnis' + d.getTime() + ".csv", { create: true, exclusive: false }, successCallbackGet, errorCallbackGet);
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, 
+        function successCallback(fs) {
 
-        function successCallbackGet(fileEntry) {
-            fileEntry.file(function (file) {
+            var x = d.getTime() + ".csv";
 
+            fs.root.getFile(x, { create: true, exclusive: false }, successCallbackGet, errorCallbackGet);
 
-                fileEntry.createWriter(function (fileWriter) {
+            function successCallbackGet(fileEntry) {
+                fileEntry.file(function (file) {
+                                    fileEntry.createWriter(function (fileWriter) {
 
-                    fileWriter.onwriteend = function () {
-                        console.log("Successful file write...");
-                    };
+                                                                fileWriter.onwriteend = function () {
+                                                                    //console.log("Successful file write...");
+                                                                };
 
-                    fileWriter.onerror = function (e) {
-                        console.log("Failed file write: " + e.toString());
-                    };
+                                                                fileWriter.onerror = function (e) {
+                                                                    //console.log("Failed file write: " + e.toString());
+                                                                };
 
-                    console.log("vor write");
-                    fileWriter.write(result);
-                    console.log("nach write");
-                })
+                                                                //console.log("vor write");
+                                                                fileWriter.write(result);
+                                                                console.log("nach write");
+                                                                console.log();
 
-            }, errorCallback);
-        }
-    }, errorCallback);
+                                                                var newFileUri = cordova.file.dataDirectory + "Downloads/";
+
+                                                                window.resolveLocalFileSystemURL(newFileUri,
+                                                                    function(dirEntry) {
+                                                                        // move the file to a new directory and rename it
+                                                                        fileEntry.moveTo(dirEntry, x, function(){alert("Datei "+x+" sollte nun in den Downloads zu finden sein.")}, errorCallbackMove);
+                                                                    },
+                                                                    errorCallback);
+                                                            })
+
+                                }, 
+                                errorCallback);
+            }
+    
+        }, 
+        errorCallback);
 
     function errorCallbackGet(error) {
         alert("ERROR-CSV-GET: " + error.message)
+    }
+
+    function errorCallbackMove(error) {
+        alert("ERROR-CSV-MOVE: " + error.message)
     }
 
     function errorCallback(error) {
