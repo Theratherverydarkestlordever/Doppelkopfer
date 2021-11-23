@@ -92,6 +92,11 @@ button {
     background-color: orange;
 }
 
+td,th {
+    text-align: center;
+    vertical-align: middle;
+  }
+
 .table {
     max-width: 100%;
 }

@@ -7,7 +7,9 @@ function startNewGame(number) {
     localStorage.setItem("allowedDist", allowedDist);
     localStorage.setItem("allowedWinners", number - 1 - allowedDist);
     var punkte = [0, 0, 0, 0, 0, 0];
+    var soloPunkte = [0, 0, 0, 0, 0, 0];
     localStorage.setItem("punkte", punkte.toString());
+    localStorage.setItem("soloPunkte", soloPunkte.toString());
     gameTable = [
         [],
         [],
@@ -24,7 +26,7 @@ function startNewGame(number) {
         [],
         []
     ];
-    hatSolo = [0,0,0,0,0]; //Markierung für das Pflichtsolo
+    hatSolo = [0, 0, 0, 0, 0]; //Markierung für das Pflichtsolo
     verlauf = [
         [],
         [],

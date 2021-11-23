@@ -41,7 +41,7 @@ function quit(arg) {
         document.getElementById("pointTxt2").style.display = "none";
         var string = "Ergebnis nach " + (localStorage.getItem("round") - 1) + " Spielen";
         document.getElementById("round").innerHTML = string;
-        $("body").append('<a class="fw Box" onclick="createCSV()">CSV erstellen</a>');
+        //$("body").append('<a class="fw Box" onclick="createCSV()">CSV erstellen</a>');
         $("body").append('<a class="fw Box" href="../index.html">Hauptmenü</a>');
         localStorage.setItem("running", 0);
     }
@@ -163,11 +163,12 @@ var Mscore = 0;
 var wins = 0;
 
 function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angezeigte Zahl und die Variable
+    if(value < 0) value = 0;
     Pscore = 0;
     Mscore = 0;
     wins = 0;
-    var allowedWinners = localStorage.getItem("allowedWinners");
-    var allowedDist = localStorage.getItem("allowdDist");
+    //var allowedWinners = localStorage.getItem("allowedWinners");
+    //var allowedDist = localStorage.getItem("allowdDist");
     var gewNamen = "";
     var verNamen = "";
     var namen = localStorage.getItem("namen").split(",");
@@ -184,8 +185,8 @@ function setScore(value) { //aktualisiert bei Klick auf ein Punktefeld die angez
     }
 
     if (wins == 1) { //SOLO gewonnen
-        Pscore = value;
-        Mscore = value / (number - wins - geber);
+        Pscore = value * (number - wins - geber);
+        Mscore = value;
     } else if (wins == (number - geber - 1)) { //&& (number == 4 || number == 5)) { //SOLO verloren bei 4 oder 5 Spielern
         Pscore = value;
         Mscore = value * wins;
@@ -249,8 +250,9 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
 
     if (Pscore <= 0) return;
 
-    var modal = document.getElementById("scoreSelect");
+    //var modal = document.getElementById("scoreSelect");
     var punkte = localStorage.getItem("punkte").split(",");
+    var soloPunkte = localStorage.getItem("soloPunkte").split(",");
     var number = localStorage.getItem("playerNo");
     var gameTable = JSON.parse(localStorage.getItem("gameTable"));
     var soloTable = JSON.parse(localStorage.getItem("soloTable"));
@@ -260,11 +262,11 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
 
     for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
         if (marking[i] == 1) { //GEWINNER
-            punkte[i] = parseInt(punkte[i]) + Pscore;
+            //punkte[i] = parseInt(punkte[i]) + Pscore;
             cntGewinner++;
         } else if (marking[i] == 0) { //VERLIERER
-            punkte[i] = parseInt(punkte[i]) - Mscore;
-        } else if(marking[i] == 2){ //GEBER
+            //punkte[i] = parseInt(punkte[i]) - Mscore;
+        } else if (marking[i] == 2) { //GEBER
             //DO Nothing
         }
         else {
@@ -273,7 +275,7 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
     }
 
 
-    if ((cntGewinner == 1 || cntGewinner == 3)){//} && hatSolo[number] == 0) { //SOLO
+    if ((cntGewinner == 1 || cntGewinner == 3)) {//} && hatSolo[number] == 0) { //SOLO
         //console.log("SoloTable füllen");
         var solo = (cntGewinner == 1) ? marking.indexOf(1) : marking.indexOf(0);
         if (solo == -1) {
@@ -286,9 +288,11 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
                 if (marking[i] == 1) { //GEWINNER
                     soloTable[i].push(Pscore);
                     verlauf[i].push(Pscore);
+                    soloPunkte[i] = parseInt(soloPunkte[i]) + Pscore;
                 } else if (marking[i] == 0) { //VERLIERER
                     soloTable[i].push((-1) * Mscore);
                     verlauf[i].push((-1) * Mscore);
+                    soloPunkte[i] = parseInt(soloPunkte[i]) - Mscore;
                 } else if (marking[i] == 2) { //GEBER
                     soloTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
                     verlauf[i].push(0);
@@ -297,16 +301,18 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
                 }
             }
             verlauf[number].push('s');
-            soloTable[number].push(localStorage.getItem("round"));
+            soloTable[number].push(Math.min(Math.abs(Pscore),Math.abs(Mscore)));//localStorage.getItem("round"));
         } else {
             //console.log("Doch GameTable füllen");
             for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
                 if (marking[i] == 1) { //GEWINNER
-                    gameTable[i].push(punkte[i]);
                     verlauf[i].push(Pscore);
-                } else if (marking[i] == 0) { //VERLIERER
+                    punkte[i] = parseInt(punkte[i]) + Pscore;
                     gameTable[i].push(punkte[i]);
+                } else if (marking[i] == 0) { //VERLIERER
                     verlauf[i].push((-1) * Mscore);
+                    punkte[i] = parseInt(punkte[i]) - Mscore;
+                    gameTable[i].push(punkte[i]);
                 } else if (marking[i] == 2) { //GEBER
                     gameTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
                     verlauf[i].push(0);
@@ -315,18 +321,20 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
                 }
             }
             verlauf[number].push('g');
-            gameTable[number].push(Pscore + "S");
+            gameTable[number].push(Math.min(Math.abs(Pscore),Math.abs(Mscore))+"S");
         }
 
     } else {
         //console.log("GameTable füllen");
         for (var i = 0; i < number; i++) { //allen Spieler auf Status 1 werden Punkte gegeben
             if (marking[i] == 1) { //GEWINNER
-                gameTable[i].push(punkte[i]);
                 verlauf[i].push(Pscore);
-            } else if (marking[i] == 0) { //VERLIERER
+                punkte[i] = parseInt(punkte[i]) + Pscore;
                 gameTable[i].push(punkte[i]);
+            } else if (marking[i] == 0) { //VERLIERER
                 verlauf[i].push((-1) * Mscore);
+                punkte[i] = parseInt(punkte[i]) - Mscore;
+                gameTable[i].push(punkte[i]);
             } else if (marking[i] == 2) { //GEBER
                 gameTable[i].push('G'); //TODO oder lieber 0, also den Wert von vorher?
                 verlauf[i].push(0);
@@ -340,6 +348,7 @@ function closeScore() { //Schließt die Punkteauswahl und übernimmt die Punkte
 
     //console.log("Verlauf: " + verlauf);
     localStorage.setItem("punkte", punkte.toString())
+    localStorage.setItem("soloPunkte", soloPunkte.toString());
     localStorage.setItem("gameTable", JSON.stringify(gameTable));
     localStorage.setItem("soloTable", JSON.stringify(soloTable));
     localStorage.setItem("hatSolo", JSON.stringify(hatSolo));
@@ -379,7 +388,9 @@ function undo() {
         localStorage.setItem("round", "1");
         document.getElementById("round").innerHTML = "Spiel 1"
         punkte = [0, 0, 0, 0, 0, 0];
+        soloPunkte = [0, 0, 0, 0, 0, 0];
         localStorage.setItem("punkte", punkte.toString());
+        localStorage.setItem("soloPunkte", soloPunkte.toString());
         gameTable = [
             [],
             [],
@@ -422,6 +433,7 @@ function undo() {
     document.getElementById("scr").disabled = true;
     emptyTable();
     var punkte = localStorage.getItem("punkte").split(",");
+    var soloPunkte = localStorage.getItem("soloPunkte").split(",");
     var verlauf = JSON.parse(localStorage.getItem("verlauf"));
     var type = verlauf[number][verlauf[number].length - 1];
     //console.log("Verlauf " + verlauf);
@@ -439,7 +451,7 @@ function undo() {
                 maxVal = curVal;
                 maxIdx = i;
             }
-            punkte[i] -= verlauf[i].pop();
+            soloPunkte[i] -= verlauf[i].pop();
         }
         hatSolo[maxIdx] = 0;
         localStorage.setItem("soloTable", JSON.stringify(soloTable));
@@ -468,6 +480,7 @@ function undo() {
     }*/
 
     localStorage.setItem("punkte", punkte.toString())
+    localStorage.setItem("soloPunkte", soloPunkte.toString());
     localStorage.setItem("verlauf", JSON.stringify(verlauf));
     showResult();
     setScore(-1);
@@ -478,6 +491,7 @@ function undo() {
 function showResult() {
     var namen = localStorage.getItem("namen").split(",");
     var punkte = localStorage.getItem("punkte").split(",");
+    var soloPunkte = localStorage.getItem("soloPunkte").split(",");
     var number = Number(localStorage.getItem("playerNo"));
     var gameTable = JSON.parse(localStorage.getItem("gameTable"));
     var soloTable = JSON.parse(localStorage.getItem("soloTable"));
@@ -516,7 +530,7 @@ function showResult() {
     if (soloTable[0].length > 0) {
         row = "<thead>\n<tr>";
         row += "\n<th scope='col'>Nr.</th>";
-        row += "\n<th scope='col'>R</th>";
+        row += "\n<th scope='col'>P</th>";
         for (var i = 0; i < number; i++) {
             row += "\n<th scope='col'>" + namen[i] + "</th>";
         }
@@ -552,7 +566,8 @@ function showResult() {
 
     row = "<tr>";
     for (var i = 0; i < number; i++) {
-        row += "\n<th>" + punkte[i] + "</th>";
+        var temp = parseInt(punkte[i]) + parseInt(soloPunkte[i]);
+        row += "\n<th>" + temp + "</th>";
     }
     row += "</tr>";
     $("#queryTableResult").append(row);
@@ -573,6 +588,7 @@ function emptyTable() {
     return;
 }
 
+/*
 function createCSV() {
 
     var permissions = cordova.plugins.permissions;
@@ -650,7 +666,7 @@ function downloadFile() {
 
     const d = new Date();
 
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, 
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0,
         function successCallback(fs) {
 
             var x = d.getTime() + ".csv";
@@ -684,11 +700,11 @@ function downloadFile() {
                                                                     errorCallback);
                                                             })
 
-                                }, 
+                                },
                                 errorCallback);
             }
-    
-        }, 
+
+        },
         errorCallback);
 
     function errorCallbackGet(error) {
@@ -703,4 +719,4 @@ function downloadFile() {
         alert("ERROR-CSV: " + error.message)
     }
     return;
-}
+}*/
